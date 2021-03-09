@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenericConnector sdkApiVersion="2.8.2">
+    <connectorClassName>com.boomi.connector.apm.BoomiAPMConnector</connectorClassName>
+</GenericConnector>

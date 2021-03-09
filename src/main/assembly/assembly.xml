@@ -1,0 +1,21 @@
+<assembly>
+    <id>-car</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <componentDescriptors>
+        <componentDescriptor>dependency.xml</componentDescriptor>
+    </componentDescriptors>
+    <fileSets>
+        <fileSet>
+            <outputDirectory>META-INF</outputDirectory>
+            <includes>
+                <include>connector-config.xml</include>
+                <include>connector-descriptor.xml</include>
+                <include>connector.xml</include>
+            </includes>
+            <directory>target/classes</directory>
+        </fileSet>
+    </fileSets>
+</assembly>

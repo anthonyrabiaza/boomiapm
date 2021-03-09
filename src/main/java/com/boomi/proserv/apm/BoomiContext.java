@@ -1,0 +1,46 @@
+package com.boomi.proserv.apm;
+
+public class BoomiContext {
+    public String executionId;
+    public String processName;
+    public String processId;
+    public String accountId;
+
+    public BoomiContext(String executionId, String processName, String processId, String accountId) {
+        this.executionId    = executionId;
+        this.processName    = processName;
+        this.processId      = processId;
+        this.accountId      = accountId;
+    }
+    public String getExecutionId() {
+        return executionId;
+    }
+
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
+    }
+
+    public String getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+}

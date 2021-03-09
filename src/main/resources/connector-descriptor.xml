@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenericConnectorDescriptor>
+    <description>Boomi Data Security Processor</description>
+
+    <field id="platform" label="APM Platform" type="string">
+        <helpText>Tracing Platform</helpText>
+        <defaultValue>datadog</defaultValue>
+        <allowedValue label="Datadog">
+            <value>datadog</value>
+        </allowedValue>
+        <allowedValue label="New Relic (Using Payload)">
+            <value>newrelic_payload</value>
+        </allowedValue>
+        <allowedValue label="New Relic (Using ParentId)">
+            <value>newrelic_parentid</value>
+        </allowedValue>
+        <allowedValue label="Disabled">
+            <value>disabled</value>
+        </allowedValue>
+    </field>
+
+    <field id="apiURL" label="API Endpoint" type="string">
+        <helpText>API Endpoint in the form of a URL</helpText>
+        <defaultValue>https://api.datadoghq.eu/api/v1/events</defaultValue>
+    </field>
+    <field id="apiKey" label="API Key" type="password">
+        <helpText>Platform API Key</helpText>
+    </field>
+    <field id="appKey" label="App Key" type="password">
+        <helpText>Platform APP Key</helpText>
+    </field>
+
+    <operation types="EXECUTE" inputType="binary" outputType="binary">
+        <field type="string" id="action" label="Action">
+            <defaultValue>start</defaultValue>
+            <allowedValue label="Start Trace">
+                <value>start</value>
+            </allowedValue>
+            <allowedValue label="End Trace">
+                <value>stop</value>
+            </allowedValue>
+            <allowedValue label="Error">
+                <value>error</value>
+            </allowedValue>
+        </field>
+
+        <field type="boolean" id="sendEvent" label="Send Error Event">
+            <defaultValue>true</defaultValue>
+        </field>
+    </operation>
+
+</GenericConnectorDescriptor>
