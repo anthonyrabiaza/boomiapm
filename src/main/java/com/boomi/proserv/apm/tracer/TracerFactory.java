@@ -13,11 +13,8 @@ public class TracerFactory {
             case "datadog":
                 s_tracer = new DatadogTracer();
                 break;
-            case "newrelic_payload":
-                s_tracer = new NewRelicPayloadTracer();
-                break;
-            case "newrelic_parentId":
-                s_tracer = new NewRelicParentIdTracer();
+            case "newrelic":
+                s_tracer = new NewRelicTracer();
                 break;
         }
 

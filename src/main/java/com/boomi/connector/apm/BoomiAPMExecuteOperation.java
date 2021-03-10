@@ -5,11 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.boomi.connector.api.ObjectData;
-import com.boomi.connector.api.OperationResponse;
-import com.boomi.connector.api.OperationStatus;
-import com.boomi.connector.api.ResponseUtil;
-import com.boomi.connector.api.UpdateRequest;
+import com.boomi.connector.api.*;
 import com.boomi.connector.util.BaseUpdateOperation;
 
 import com.boomi.execution.ExecutionManager;
@@ -44,6 +40,7 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 		String apiURL 		= getContext().getConnectionProperties().getProperty("apiURL");
 		String apiKey 		= getContext().getConnectionProperties().getProperty("apiKey");
 		String appKey 		= getContext().getConnectionProperties().getProperty("appKey");
+		String rtProcess	= getContext().getOperationProperties().getProperty("realTimeProcessing");
 
 		String executionID  = "N/A";
 		String processName  = "N/A";
@@ -62,40 +59,43 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 
 		accountID		= ExecutionManager.getCurrent().getAccountId();
 
-		ExecutionUtil.setDynamicProcessProperty("DPP_executionID", executionID, false);
+		/*ExecutionUtil.setDynamicProcessProperty("DPP_executionID", executionID, false);
 		ExecutionUtil.setDynamicProcessProperty("DPP_processName", processName, false);
 		ExecutionUtil.setDynamicProcessProperty("DPP_processID", processID, false);
-		ExecutionUtil.setDynamicProcessProperty("DPP_accountID", accountID, false);
+		ExecutionUtil.setDynamicProcessProperty("DPP_accountID", accountID, false);*/
 
 		log(logger, log, "ARA: action is " + action + ", platform is " + platform);
 
 		BoomiContext boomiContext 	= new BoomiContext(executionID, processName, processID, accountID);
+		PayloadMetadata metadata 	= response.createMetadata();
 		Tracer tracer 				= TracerFactory.getTracer(platform);
 
-		switch(action) {
-			case "start":
-				tracer.start(logger, boomiContext);
-				break;
-			case "stop":
-				tracer.stop(logger, boomiContext);
-				if(sendEvent) {
-					EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
-					if(eventsPublisher!=null) {
-						eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, false);
+		if(tracer != null) {
+			switch (action) {
+				case "start":
+					tracer.start(logger, boomiContext, metadata);
+					break;
+				case "stop":
+					tracer.stop(logger, boomiContext, metadata);
+					if (sendEvent) {
+						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
+						if (eventsPublisher != null) {
+							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, false);
+						}
 					}
-				}
-				break;
-			case "error":
-				tracer.error(logger, boomiContext);
-				if(sendEvent) {
-					EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
-					if(eventsPublisher!=null) {
-						eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, true);
+					break;
+				case "error":
+					tracer.error(logger, boomiContext, metadata);
+					if (sendEvent) {
+						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
+						if (eventsPublisher != null) {
+							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, true);
+						}
 					}
-				}
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
+			}
 		}
 
 		for (ObjectData input : request) {
@@ -104,24 +104,26 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 
 				String message 				= BoomiAPMConnector.inputStreamToString(input.getData());
 				InputStream result  		= input.getData();
-				Map<String, String> props 	= input.getDynamicProperties();
+				Map<String, String> props 	= input.getUserDefinedProperties();//input.getDynamicProperties();
 
 				if(message!=null) {
 					try {
-						switch(action) {
-							case "start":
-								tracer.start(logger, boomiContext, message, props);
-								break;
-							case "stop":
-								tracer.stop(logger, boomiContext, message, props);
-								break;
-							case "error":
-								tracer.error(logger, boomiContext, message, props);
-								break;
-							default:
-								break;
+						if(tracer!=null) {
+							switch (action) {
+								case "start":
+									tracer.start(logger, boomiContext, rtProcess, message, props, metadata);
+									break;
+								case "stop":
+									tracer.stop(logger, boomiContext, rtProcess, message, props, metadata);
+									break;
+								case "error":
+									tracer.error(logger, boomiContext, rtProcess, message, props, metadata);
+									break;
+								default:
+									break;
+							}
 						}
-						response.addResult(input, OperationStatus.SUCCESS, "200", "OK", ResponseUtil.toPayload(result));
+						response.addResult(input, OperationStatus.SUCCESS, "200", "OK", PayloadUtil.toPayload(result, metadata));
 					} catch (Exception e) {
 						logger.severe(e.getMessage());
 						e.printStackTrace();

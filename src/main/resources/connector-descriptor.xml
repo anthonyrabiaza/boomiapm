@@ -8,11 +8,8 @@
         <allowedValue label="Datadog">
             <value>datadog</value>
         </allowedValue>
-        <allowedValue label="New Relic (Using Payload)">
-            <value>newrelic_payload</value>
-        </allowedValue>
-        <allowedValue label="New Relic (Using ParentId)">
-            <value>newrelic_parentid</value>
+        <allowedValue label="New Relic">
+            <value>newrelic</value>
         </allowedValue>
         <allowedValue label="Disabled">
             <value>disabled</value>
@@ -44,9 +41,26 @@
             </allowedValue>
         </field>
 
-        <field type="boolean" id="sendEvent" label="Send Error Event">
+        <field type="string" id="realTimeProcessing" label="Realtime Processing">
+            <defaultValue>ignore</defaultValue>
+            <allowedValue label="Use APM Payload">
+                <value>payload</value>
+            </allowedValue>
+            <allowedValue label="Use Parent ID">
+                <value>parentid</value>
+            </allowedValue>
+            <allowedValue label="Ignore">
+                <value>ignore</value>
+            </allowedValue>
+        </field>
+
+        <field type="boolean" id="sendEvent" label="Send Event">
             <defaultValue>true</defaultValue>
         </field>
     </operation>
+
+    <trackedProperty id="tracePayload" label="Trace Payload"/>
+    <trackedProperty id="traceID" label="Trace ID"/>
+    <trackedProperty id="parentID" label="Parent ID"/>
 
 </GenericConnectorDescriptor>

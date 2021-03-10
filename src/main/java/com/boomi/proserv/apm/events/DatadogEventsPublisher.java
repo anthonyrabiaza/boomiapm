@@ -4,7 +4,6 @@ import com.boomi.execution.ExecutionUtil;
 import com.boomi.proserv.apm.BoomiContext;
 import datadog.trace.api.DisableTestTrace;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;

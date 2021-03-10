@@ -1,10 +1,5 @@
 package com.boomi.proserv.apm.events;
 
-import com.boomi.proserv.apm.tracer.DatadogTracer;
-import com.boomi.proserv.apm.tracer.NewRelicParentIdTracer;
-import com.boomi.proserv.apm.tracer.NewRelicPayloadTracer;
-import com.boomi.proserv.apm.tracer.Tracer;
-
 public class EventsPublisherFactory {
     static EventsPublisher s_eventsPublisher    = null;
     static String s_platform                    = null;

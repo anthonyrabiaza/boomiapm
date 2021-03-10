@@ -28,6 +28,15 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.7.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.7.0" level="project" />
     <orderEntry type="module-library">
+      <library name="Maven: javax.xml.bind:jaxb-api:2.1.17">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Documents/dev/lib/boomi/jaxb-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="Maven: com.boomi.execution:boomi-execution:1.0">
         <CLASSES>
           <root url="jar://$USER_HOME$/Documents/dev/lib/boomi/container-execution.jar!/" />
