@@ -1,13 +1,12 @@
 package com.boomi.proserv.apm.tracer;
 
 import com.boomi.connector.api.PayloadMetadata;
-import com.boomi.execution.ExecutionUtil;
 import com.boomi.proserv.apm.BoomiContext;
 
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class DatadogTracer implements Tracer {
+public class OpenTracingTracer extends Tracer {
     @Override
     public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {
         try {
@@ -15,11 +14,12 @@ public class DatadogTracer implements Tracer {
             io.opentracing.Span span = io.opentracing.util.GlobalTracer.get().activeSpan();
             if(span==null) {
                 io.opentracing.Tracer tracer = io.opentracing.util.GlobalTracer.get();
-                span = tracer.buildSpan(context.getProcessName()).withTag("service", System.getProperty("dd.service")).start();
+                span = tracer.buildSpan(context.getProcessName()).withTag("service", context.getServiceName()).start();
                 tracer.activateSpan(span);
             }
-            //ExecutionUtil.setDynamicProcessProperty("DPP_traceID", span.context().toTraceId(), false);
-            metadata.setTrackedProperty("traceID", span.context().toTraceId());
+            String traceId = span.context().toTraceId();
+            setTraceId(traceId);
+            metadata.setTrackedProperty("traceID", traceId);
             span.setOperationName(context.getProcessName());
             span.setTag("boomi.executionID", context.getExecutionId());
             span.setTag("boomi.processName", context.getProcessName());
@@ -63,18 +63,13 @@ public class DatadogTracer implements Tracer {
         }
     }
 
-    @Override
-    public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> properties, PayloadMetadata metadata) {
-
-    }
-
-    @Override
-    public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> properties, PayloadMetadata metadata) {
-
-    }
-
-    @Override
-    public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> properties, PayloadMetadata metadata) {
-
+    protected void addTags(Map<String, String> dynProps) {
+        Map<String, String> tags = getTags(dynProps);
+        if(tags.size()>0) {
+            io.opentracing.Span span = io.opentracing.util.GlobalTracer.get().activeSpan();
+            for (Map.Entry<String, String> entry : tags.entrySet()) {
+                span.setTag(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }

@@ -2,24 +2,23 @@ package com.boomi.proserv.apm.events;
 
 public class EventsPublisherFactory {
     static EventsPublisher s_eventsPublisher    = null;
-    static String s_platform                    = null;
+    static String s_eventPlatform               = null;
 
-    static public EventsPublisher getEventPublisher(String platform) {
-        if(s_eventsPublisher != null && platform.equals(s_platform)) {
+    static public EventsPublisher getEventPublisher(String eventPlatform) {
+        if(s_eventsPublisher != null && eventPlatform.equals(s_eventPlatform)) {
             return s_eventsPublisher;
         }
 
-        switch(platform) {
+        switch(eventPlatform) {
             case "datadog":
                 s_eventsPublisher = new DatadogEventsPublisher();
                 break;
-            case "newrelic_payload":
-            case "newrelic_parentId":
+            default:
                 s_eventsPublisher = null;
                 break;
         }
 
-        s_platform = platform;
+        s_eventPlatform = eventPlatform;
         return s_eventsPublisher;
     }
 }

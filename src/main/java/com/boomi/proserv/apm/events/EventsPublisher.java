@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ public abstract class EventsPublisher {
     public static String EVENT_TEXT_SUCCESS     = "Successful execution of ";
     public static String EVENT_SUCCESS          = "success";
 
-    public abstract void sendEvents(Logger logger, BoomiContext boomiContext, String url, String apiKey, String appKey, boolean error);
+    public abstract void sendEvents(Logger logger, BoomiContext boomiContext, String url, String apiKey, String appKey, String traceId, boolean error);
 
     protected void postRequest(String url, String body, Map<String, String> headers) throws Exception {
         URL urlTarget = new URL(url);
@@ -30,12 +31,14 @@ public abstract class EventsPublisher {
         httpConnection.setUseCaches(false);
         httpConnection.setDoOutput(true);
         httpConnection.setRequestMethod("POST");
-        httpConnection.setFixedLengthStreamingMode(body.length());
+        byte[] bytes = body.getBytes();
+        String bodyUTF8 = new String(bytes, StandardCharsets.UTF_8);
+        httpConnection.setFixedLengthStreamingMode(bodyUTF8.length());
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             httpConnection.setRequestProperty(entry.getKey(), entry.getValue());
         }
-        OutputStreamWriter writer = new OutputStreamWriter(httpConnection.getOutputStream());
-        writer.write(body);
+        OutputStreamWriter writer = new OutputStreamWriter(httpConnection.getOutputStream(), StandardCharsets.UTF_8);
+        writer.write(bodyUTF8);
         writer.flush();
         httpConnection.disconnect();
     }

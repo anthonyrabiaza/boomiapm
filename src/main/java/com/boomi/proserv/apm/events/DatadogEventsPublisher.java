@@ -1,6 +1,5 @@
 package com.boomi.proserv.apm.events;
 
-import com.boomi.execution.ExecutionUtil;
 import com.boomi.proserv.apm.BoomiContext;
 import datadog.trace.api.DisableTestTrace;
 
@@ -12,7 +11,7 @@ public class DatadogEventsPublisher extends EventsPublisher {
 
     @DisableTestTrace
     @Override
-    public void sendEvents(Logger logger, BoomiContext boomiContext, String url, String apiKey, String appKey, boolean error) {
+    public void sendEvents(Logger logger, BoomiContext boomiContext, String url, String apiKey, String appKey, String traceId, boolean error) {
         try {
             logger.info("Sending events to Datadog...");
             StringBuffer body = new StringBuffer();
@@ -36,13 +35,13 @@ public class DatadogEventsPublisher extends EventsPublisher {
             body.append(" , executionId is ");
             body.append(boomiContext.getExecutionId());
             body.append(" , traceId is ");
-            body.append(ExecutionUtil.getDynamicProcessProperty("DPP_traceID"));
+            body.append(traceId);
             body.append("\\n");
             body.append("%%% \\n");//Markdown start
             body.append("[See APM Trace]");
             body.append("(");
-            body.append("/apm/trace/");body.append(ExecutionUtil.getDynamicProcessProperty("DPP_traceID"));
-            body.append(") · ");
+            body.append("/apm/trace/");body.append(traceId);
+            body.append(") | ");
             body.append("[See Process Execution]");
             body.append("(");
             body.append("https://platform.boomi.com/#search;accountId=");body.append(boomiContext.getAccountId());body.append(";executionId=");body.append(boomiContext.getExecutionId());

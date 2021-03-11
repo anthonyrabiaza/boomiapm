@@ -4,12 +4,23 @@
 
     <field id="platform" label="APM Platform" type="string">
         <helpText>Tracing Platform</helpText>
-        <defaultValue>datadog</defaultValue>
-        <allowedValue label="Datadog">
-            <value>datadog</value>
+        <defaultValue>opentracing</defaultValue>
+        <allowedValue label="OpenTracing">
+            <value>opentracing</value>
         </allowedValue>
         <allowedValue label="New Relic">
             <value>newrelic</value>
+        </allowedValue>
+        <allowedValue label="Disabled">
+            <value>disabled</value>
+        </allowedValue>
+    </field>
+
+    <field id="eventPlatform" label="Events Platform" type="string">
+        <helpText>Events Platform</helpText>
+        <defaultValue>datadog</defaultValue>
+        <allowedValue label="Datadog">
+            <value>datadog</value>
         </allowedValue>
         <allowedValue label="Disabled">
             <value>disabled</value>
@@ -25,6 +36,10 @@
     </field>
     <field id="appKey" label="App Key" type="password">
         <helpText>Platform APP Key</helpText>
+    </field>
+    <field id="serviceName" label="Service Name" type="string">
+        <helpText>Boomi Service Name for APM</helpText>
+        <defaultValue>BoomiMolecule</defaultValue>
     </field>
 
     <operation types="EXECUTE" inputType="binary" outputType="binary">
@@ -58,6 +73,8 @@
             <defaultValue>true</defaultValue>
         </field>
     </operation>
+
+    <dynamicProperty type="string" id="keyvalueTags" label="Tags (k=v separated by ;)"/>
 
     <trackedProperty id="tracePayload" label="Trace Payload"/>
     <trackedProperty id="traceID" label="Trace ID"/>

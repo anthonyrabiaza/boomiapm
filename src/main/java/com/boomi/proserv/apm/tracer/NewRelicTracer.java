@@ -3,29 +3,15 @@ package com.boomi.proserv.apm.tracer;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class NewRelicTracer implements Tracer {
+public class NewRelicTracer extends Tracer {
     @Override
-    public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
 
-    }
-
-    @Override
-    public void stop(Logger logger, BoomiContext context, PayloadMetadata metadata) {
-
-    }
-
-    @Override
-    public void error(Logger logger, BoomiContext context, PayloadMetadata metadata) {
-
-    }
-
-    @Override
-    public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> properties, PayloadMetadata metadata) {
         RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
         switch (realTimeProcessing) {
             case payload:
@@ -34,7 +20,7 @@ public class NewRelicTracer implements Tracer {
                     newrelic = properties.get("newrelic");//JMS
                 }
 
-                if (!"".equals(newrelic)) {
+                if (newrelic!=null && !"".equals(newrelic)) {
                     try {
                         logger.info("Continuing transaction using newrelic payload");
                         com.newrelic.api.agent.NewRelic.getAgent().getTransaction().acceptDistributedTracePayload(newrelic);
@@ -45,25 +31,30 @@ public class NewRelicTracer implements Tracer {
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
+                } else {
+                    logger.warning("NewRelic trace not found ");
                 }
                 break;
             case parentid:
                 String parentID = properties.get("inheader_parentid");
                 String traceID  = "";
 
-                if(!"".equals(parentID)) {
+                if(parentID!=null && !"".equals(parentID)) {
                     try {
                         logger.info("Continuing transaction using newrelic parentId");
                         com.newrelic.api.agent.NewRelic.addCustomParameter("parentId", parentID);
                         metadata.setTrackedProperty("parentID", parentID);
 
                         traceID = com.newrelic.api.agent.NewRelic.getAgent().getTraceMetadata().getTraceId();
+                        setTraceId(traceID);
                         metadata.setTrackedProperty("traceID", traceID);
 
                         logger.info("traceID:" + traceID);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
+                } else {
+                    logger.warning("NewRelic parentid not found ");
                 }
                 break;
             default:
@@ -72,7 +63,9 @@ public class NewRelicTracer implements Tracer {
     }
 
     @Override
-    public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> properties, PayloadMetadata metadata) {
+    public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
+
         RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
         switch (realTimeProcessing) {
             case payload:
@@ -87,11 +80,12 @@ public class NewRelicTracer implements Tracer {
             default:
                 break;
         }
-
     }
 
     @Override
-    public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> properties, PayloadMetadata metadata) {
+    public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
+
         RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
         switch (realTimeProcessing) {
             case payload:
@@ -106,6 +100,12 @@ public class NewRelicTracer implements Tracer {
             default:
                 break;
         }
+    }
 
+    protected void addTags(Map<String, String> dynProps) {
+        Map<String, String> tags = getTags(dynProps);
+        for (Map.Entry<String, String> entry : tags.entrySet()) {
+            com.newrelic.api.agent.NewRelic.addCustomParameter(entry.getKey(), entry.getValue());
+        }
     }
 }

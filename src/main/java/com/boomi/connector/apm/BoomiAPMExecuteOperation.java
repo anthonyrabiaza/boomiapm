@@ -34,13 +34,16 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 
 		log(logger, log, "ARA: executeUpdate received");
 
-		String platform 	= getContext().getConnectionProperties().getProperty("platform");
-		String action 		= getContext().getOperationProperties().getProperty("action");
-		boolean sendEvent 	= getContext().getOperationProperties().getBooleanProperty("sendEvent");
-		String apiURL 		= getContext().getConnectionProperties().getProperty("apiURL");
-		String apiKey 		= getContext().getConnectionProperties().getProperty("apiKey");
-		String appKey 		= getContext().getConnectionProperties().getProperty("appKey");
-		String rtProcess	= getContext().getOperationProperties().getProperty("realTimeProcessing");
+		String platform 		= getContext().getConnectionProperties().getProperty("platform");
+		String action 			= getContext().getOperationProperties().getProperty("action");
+
+		String eventPlatform 	= getContext().getConnectionProperties().getProperty("eventPlatform");
+		boolean sendEvent 		= getContext().getOperationProperties().getBooleanProperty("sendEvent");
+		String apiURL 			= getContext().getConnectionProperties().getProperty("apiURL");
+		String apiKey 			= getContext().getConnectionProperties().getProperty("apiKey");
+		String appKey 			= getContext().getConnectionProperties().getProperty("appKey");
+		String serviceName		= getContext().getConnectionProperties().getProperty("serviceName");
+		String rtProcess		= getContext().getOperationProperties().getProperty("realTimeProcessing");
 
 		String executionID  = "N/A";
 		String processName  = "N/A";
@@ -59,14 +62,9 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 
 		accountID		= ExecutionManager.getCurrent().getAccountId();
 
-		/*ExecutionUtil.setDynamicProcessProperty("DPP_executionID", executionID, false);
-		ExecutionUtil.setDynamicProcessProperty("DPP_processName", processName, false);
-		ExecutionUtil.setDynamicProcessProperty("DPP_processID", processID, false);
-		ExecutionUtil.setDynamicProcessProperty("DPP_accountID", accountID, false);*/
-
 		log(logger, log, "ARA: action is " + action + ", platform is " + platform);
 
-		BoomiContext boomiContext 	= new BoomiContext(executionID, processName, processID, accountID);
+		BoomiContext boomiContext 	= new BoomiContext(serviceName, executionID, processName, processID, accountID);
 		PayloadMetadata metadata 	= response.createMetadata();
 		Tracer tracer 				= TracerFactory.getTracer(platform);
 
@@ -78,18 +76,18 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 				case "stop":
 					tracer.stop(logger, boomiContext, metadata);
 					if (sendEvent) {
-						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
+						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
 						if (eventsPublisher != null) {
-							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, false);
+							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(), false);
 						}
 					}
 					break;
 				case "error":
 					tracer.error(logger, boomiContext, metadata);
 					if (sendEvent) {
-						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
+						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
 						if (eventsPublisher != null) {
-							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, true);
+							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(),true);
 						}
 					}
 					break;
@@ -102,22 +100,23 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 			try {
 				log(logger, log, "ARA: Processing documents ...");
 
-				String message 				= BoomiAPMConnector.inputStreamToString(input.getData());
-				InputStream result  		= input.getData();
-				Map<String, String> props 	= input.getUserDefinedProperties();//input.getDynamicProperties();
+				String message 					= BoomiAPMConnector.inputStreamToString(input.getData());
+				InputStream result  			= input.getData();
+				Map<String, String> dynProps	= input.getDynamicProperties();
+				Map<String, String> props 		= input.getUserDefinedProperties();
 
 				if(message!=null) {
 					try {
 						if(tracer!=null) {
 							switch (action) {
 								case "start":
-									tracer.start(logger, boomiContext, rtProcess, message, props, metadata);
+									tracer.start(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
 									break;
 								case "stop":
-									tracer.stop(logger, boomiContext, rtProcess, message, props, metadata);
+									tracer.stop(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
 									break;
 								case "error":
-									tracer.error(logger, boomiContext, rtProcess, message, props, metadata);
+									tracer.error(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
 									break;
 								default:
 									break;

@@ -10,8 +10,8 @@ public class TracerFactory {
         }
 
         switch(platform) {
-            case "datadog":
-                s_tracer = new DatadogTracer();
+            case "opentracing":
+                s_tracer = new OpenTracingTracer();
                 break;
             case "newrelic":
                 s_tracer = new NewRelicTracer();
