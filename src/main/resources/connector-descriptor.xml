@@ -5,8 +5,11 @@
     <field id="platform" label="APM Platform" type="string">
         <helpText>Tracing Platform</helpText>
         <defaultValue>opentracing</defaultValue>
-        <allowedValue label="OpenTracing">
+        <allowedValue label="OpenTracing/Datadog">
             <value>opentracing</value>
+        </allowedValue>
+        <allowedValue label="OpenTelemetry/Lightstep">
+            <value>opentelemetry</value>
         </allowedValue>
         <allowedValue label="New Relic">
             <value>newrelic</value>
@@ -21,6 +24,9 @@
         <defaultValue>datadog</defaultValue>
         <allowedValue label="Datadog">
             <value>datadog</value>
+        </allowedValue>
+        <allowedValue label="OpenTelemetry/Lightstep">
+            <value>opentelemetry</value>
         </allowedValue>
         <allowedValue label="Disabled">
             <value>disabled</value>

@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>0.30</version>
+    <version>0.35</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,6 +87,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-util</artifactId>
             <version>0.33.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-extension-annotations</artifactId>
+            <version>0.16.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>0.16.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

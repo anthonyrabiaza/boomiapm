@@ -13,6 +13,9 @@ public class TracerFactory {
             case "opentracing":
                 s_tracer = new OpenTracingTracer();
                 break;
+            case "opentelemetry":
+                s_tracer = new OpenTelemetryTracer();
+                break;
             case "newrelic":
                 s_tracer = new NewRelicTracer();
                 break;
