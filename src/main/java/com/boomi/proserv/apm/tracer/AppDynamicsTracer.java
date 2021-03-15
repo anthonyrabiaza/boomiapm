@@ -1,5 +1,8 @@
 package com.boomi.proserv.apm.tracer;
 
+import com.appdynamics.agent.api.AppdynamicsAgent;
+import com.appdynamics.agent.api.EntryTypes;
+import com.appdynamics.agent.api.Transaction;
 import com.appdynamics.apm.appagent.api.AgentDelegate;
 import com.appdynamics.apm.appagent.api.DataScope;
 import com.appdynamics.apm.appagent.api.IMetricAndEventReporter;
@@ -16,22 +19,38 @@ public class AppDynamicsTracer extends Tracer {
     public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {
         try {
             logger.info("Adding AppDynamics trace ...");
-            IMetricAndEventReporter dataReporter    = getDataReporter();
-            Set<DataScope> dataScopes               = getAllScopes();
+            Transaction transaction = AppdynamicsAgent.getTransaction();
+            if(transaction == null) {
+                logger.info("Starting new AppDynamics transaction");
+                transaction = AppdynamicsAgent.startTransaction(context.getProcessName(), null, EntryTypes.POJO, true);
+            } else {
+                logger.info("Continuing AppDynamics transaction");
+                AppdynamicsAgent.setCurrentTransactionName(context.getProcessName());
+            }
 
-            dataReporter.addSnapshotData("boomi.executionID", context.getExecutionId(), dataScopes);
-            dataReporter.addSnapshotData("boomi.processName", context.getProcessName(), dataScopes);
-            dataReporter.addSnapshotData("boomi.processID", context.getProcessId(), dataScopes);
+            Set<DataScope> dataScopes = getAllScopes();
+            transaction.collectData("boomi.executionID", context.getExecutionId(), dataScopes);
+            transaction.collectData("boomi.processName", context.getProcessName(), dataScopes);
+            transaction.collectData("boomi.processID", context.getProcessId(), dataScopes);
             logger.info("AppDynamics trace added");
         } catch (Exception e) {
             logger.severe("AppDynamics trace not added " + e);
         }
     }
 
-    protected IMetricAndEventReporter getDataReporter() {
-        IMetricAndEventReporter reporter = AgentDelegate.getMetricAndEventPublisher();
-
-        return reporter;
+    public void stop(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+        try {
+            logger.info("Ending AppDynamics trace ...");
+            Transaction transaction = AppdynamicsAgent.getTransaction();
+            if(transaction != null) {
+                transaction.endSegment();
+            } else {
+                logger.info("AppDynamics trace not found");
+            }
+            logger.info("AppDynamics trace ended");
+        } catch (Exception e) {
+            logger.severe("AppDynamics trace not added " + e);
+        }
     }
 
     protected Set<DataScope> getAllScopes() {
@@ -46,10 +65,12 @@ public class AppDynamicsTracer extends Tracer {
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
         if(tags.size()>0) {
-            IMetricAndEventReporter dataReporter    = getDataReporter();
-            Set<DataScope> dataScopes               = getAllScopes();
-            for (Map.Entry<String, String> entry : tags.entrySet()) {
-                dataReporter.addSnapshotData(entry.getKey(), entry.getValue(), dataScopes);
+            Transaction transaction = AppdynamicsAgent.getTransaction();
+            if(transaction != null) {
+                Set<DataScope> dataScopes = getAllScopes();
+                for (Map.Entry<String, String> entry : tags.entrySet()) {
+                    transaction.collectData(entry.getKey(), entry.getValue(), dataScopes);
+                }
             }
         }
     }
