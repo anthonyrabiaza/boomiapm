@@ -10,9 +10,14 @@ public class TracerFactory {
         }
 
         switch(platform) {
+            case "appdynamics":
+                s_tracer = new AppDynamicsTracer();
+                break;
+            case "datadog":
             case "opentracing":
                 s_tracer = new OpenTracingTracer();
                 break;
+            case "lightstep":
             case "opentelemetry":
                 s_tracer = new OpenTelemetryTracer();
                 break;

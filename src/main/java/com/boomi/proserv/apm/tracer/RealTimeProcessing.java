@@ -2,6 +2,7 @@ package com.boomi.proserv.apm.tracer;
 
 public enum RealTimeProcessing {
     payload,
+    w3c,
     parentid,
     ignore;
 

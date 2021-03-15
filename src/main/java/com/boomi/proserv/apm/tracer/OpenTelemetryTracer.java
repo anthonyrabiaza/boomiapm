@@ -2,18 +2,23 @@ package com.boomi.proserv.apm.tracer;
 
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
+
 import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.StatusCode;
 
 import java.util.Map;
 import java.util.logging.Logger;
+
 
 public class OpenTelemetryTracer extends Tracer {
 
     public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {
         try {
             logger.info("Adding OpenTelemetry trace ...");
-            io.opentelemetry.api.trace.Tracer otracer = io.opentelemetry.api.GlobalOpenTelemetry.getTracer("boomi");
-            io.opentelemetry.api.trace.Span span = io.opentelemetry.api.trace.Span.current();
+            io.opentelemetry.api.trace.Tracer otracer = GlobalOpenTelemetry.getTracer("boomi");
+            Span span = Span.current();
             if(span==null || !span.getSpanContext().isValid()) {
                 span = otracer.spanBuilder(context.getProcessName()).setSpanKind(SpanKind.CLIENT).startSpan();
                 span.makeCurrent();
@@ -30,7 +35,7 @@ public class OpenTelemetryTracer extends Tracer {
     public void stop(Logger logger, BoomiContext context, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTelemetry trace ...");
-            io.opentelemetry.api.trace.Span span = io.opentelemetry.api.trace.Span.current();
+            Span span = Span.current();
             if(span!=null && span.getSpanContext().isValid()) {
                 span.end();
                 logger.info("OpenTelemetry trace closed");
@@ -44,9 +49,9 @@ public class OpenTelemetryTracer extends Tracer {
     public void error(Logger logger, BoomiContext context, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTelemetry trace ...");
-            io.opentelemetry.api.trace.Span span = io.opentelemetry.api.trace.Span.current();
+            Span span = Span.current();
             if(span!=null && span.getSpanContext().isValid()) {
-                span.setStatus(io.opentelemetry.api.trace.StatusCode.ERROR, "error");
+                span.setStatus(StatusCode.ERROR, "error");
                 span.end();
                 logger.info("OpenTelemetry trace closed with Error");
             } else {
@@ -60,7 +65,7 @@ public class OpenTelemetryTracer extends Tracer {
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
         if(tags.size()>0) {
-            io.opentelemetry.api.trace.Span span = io.opentelemetry.api.trace.Span.current();
+            Span span = Span.current();
             if(span!=null && span.getSpanContext().isValid()) {
                 for (Map.Entry<String, String> entry : tags.entrySet()) {
                     span.setAttribute(entry.getKey(), entry.getValue());

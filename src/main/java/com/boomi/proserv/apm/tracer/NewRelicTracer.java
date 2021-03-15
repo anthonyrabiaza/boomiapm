@@ -3,6 +3,11 @@ package com.boomi.proserv.apm.tracer;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 
+import com.newrelic.api.agent.ConcurrentHashMapHeaders;
+import com.newrelic.api.agent.HeaderType;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.TransportType;
+
 import java.util.Base64;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -23,11 +28,33 @@ public class NewRelicTracer extends Tracer {
                 if (newrelic!=null && !"".equals(newrelic)) {
                     try {
                         logger.info("Continuing transaction using newrelic payload");
-                        com.newrelic.api.agent.NewRelic.getAgent().getTransaction().acceptDistributedTracePayload(newrelic);
-                        com.newrelic.api.agent.NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
-                        com.newrelic.api.agent.NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
-                        com.newrelic.api.agent.NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
+                        NewRelic.getAgent().getTransaction().acceptDistributedTracePayload(newrelic);
+                        NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
+                        NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
+                        NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
                         metadata.setTrackedProperty("tracePayload", newrelic);
+                    } catch (Exception e) {
+                        logger.severe("NewRelic trace not added " + e);
+                    }
+                } else {
+                    logger.warning("NewRelic trace not found ");
+                }
+                break;
+            case w3c://TO BE TESTED
+                String traceparent  = getTraceparent(properties);
+                String tracestate   = getTracestate(properties);
+
+                if (traceparent!=null && !"".equals(traceparent) && tracestate!=null && !"".equals(tracestate)) {
+                    try {
+                        logger.info("Continuing transaction using newrelic w3c");
+                        ConcurrentHashMapHeaders headers = ConcurrentHashMapHeaders.build(HeaderType.HTTP);
+                        headers.addHeader("traceparent", traceparent);
+                        headers.addHeader("tracestate", tracestate);
+                        NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.HTTP, headers);
+                        NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
+                        NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
+                        NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
+                        //metadata.setTrackedProperty("tracePayload", newrelic);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -42,10 +69,10 @@ public class NewRelicTracer extends Tracer {
                 if(parentID!=null && !"".equals(parentID)) {
                     try {
                         logger.info("Continuing transaction using newrelic parentId");
-                        com.newrelic.api.agent.NewRelic.addCustomParameter("parentId", parentID);
+                        NewRelic.addCustomParameter("parentId", parentID);
                         metadata.setTrackedProperty("parentID", parentID);
 
-                        traceID = com.newrelic.api.agent.NewRelic.getAgent().getTraceMetadata().getTraceId();
+                        traceID = NewRelic.getAgent().getTraceMetadata().getTraceId();
                         setTraceId(traceID);
                         metadata.setTrackedProperty("traceID", traceID);
 
@@ -69,13 +96,13 @@ public class NewRelicTracer extends Tracer {
         RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
         switch (realTimeProcessing) {
             case payload:
-                String newrelic = com.newrelic.api.agent.NewRelic.getAgent().getTransaction().createDistributedTracePayload().text();
+                String newrelic = NewRelic.getAgent().getTransaction().createDistributedTracePayload().text();
                 if(!"".equals(newrelic)){
                     metadata.setTrackedProperty("tracePayload", Base64.getEncoder().encodeToString(newrelic.getBytes()));
                 }
                 break;
             case parentid:
-                metadata.setTrackedProperty("traceID", com.newrelic.api.agent.NewRelic.getAgent().getTraceMetadata().getTraceId());
+                metadata.setTrackedProperty("traceID", NewRelic.getAgent().getTraceMetadata().getTraceId());
                 break;
             default:
                 break;
@@ -89,13 +116,13 @@ public class NewRelicTracer extends Tracer {
         RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
         switch (realTimeProcessing) {
             case payload:
-                String newrelic = com.newrelic.api.agent.NewRelic.getAgent().getTransaction().createDistributedTracePayload().text();
+                String newrelic = NewRelic.getAgent().getTransaction().createDistributedTracePayload().text();
                 if(!"".equals(newrelic)){
                     metadata.setTrackedProperty("tracePayload", Base64.getEncoder().encodeToString(newrelic.getBytes()));
                 }
                 break;
             case parentid:
-                metadata.setTrackedProperty("traceID", com.newrelic.api.agent.NewRelic.getAgent().getTraceMetadata().getTraceId());
+                metadata.setTrackedProperty("traceID", NewRelic.getAgent().getTraceMetadata().getTraceId());
                 break;
             default:
                 break;
@@ -104,8 +131,10 @@ public class NewRelicTracer extends Tracer {
 
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
-        for (Map.Entry<String, String> entry : tags.entrySet()) {
-            com.newrelic.api.agent.NewRelic.addCustomParameter(entry.getKey(), entry.getValue());
+        if(tags.size()>0) {
+            for (Map.Entry<String, String> entry : tags.entrySet()) {
+                NewRelic.addCustomParameter(entry.getKey(), entry.getValue());
+            }
         }
     }
 }

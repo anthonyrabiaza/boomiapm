@@ -37,11 +37,27 @@ public abstract class Tracer {
 
     protected abstract void addTags(Map<String, String> dynProps);
 
+    protected String getTraceparent(Map<String, String> properties){
+        String traceparent = properties.get("inheader_traceparent");//HTTP
+        if (traceparent == null || traceparent.equals("")) {
+            traceparent = properties.get("traceparent");//JMS
+        }
+        return traceparent;
+    }
+
+    protected String getTracestate(Map<String, String> properties) {
+        String tracestate = properties.get("inheader_tracestate");//HTTP
+        if (tracestate == null || tracestate.equals("")) {
+            tracestate = properties.get("tracestate");//JMS
+        }
+        return tracestate;
+    }
+
     protected Map<String, String> getTags(Map<String, String> dynProps) {
         Map<String, String> kvMap = new HashMap<String, String>();
         if(dynProps!=null) {
             String kvs = dynProps.get("keyvalueTags");
-            if (kvs != null || !"".equals(kvs)) {
+            if (kvs != null && !"".equals(kvs)) {
                 String[] kvArray = kvs.split(";");
                 for (int i = 0; i < kvArray.length; i++) {
                     String kv = kvArray[i];

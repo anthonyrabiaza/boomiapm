@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>0.35</version>
+    <version>0.38</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -97,6 +97,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
             <version>0.16.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.appdynamics.agent</groupId>
+            <artifactId>agent-api</artifactId>
+            <version>20.6.0.30246</version>
+        </dependency>
+        <dependency>
+            <groupId>com.appdynamics.agent</groupId>
+            <artifactId>agent</artifactId>
+            <version>21.2.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/Documents/dev/lib/appdynamics/21.2.0/javaagent.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

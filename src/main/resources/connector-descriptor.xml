@@ -5,11 +5,20 @@
     <field id="platform" label="APM Platform" type="string">
         <helpText>Tracing Platform</helpText>
         <defaultValue>opentracing</defaultValue>
-        <allowedValue label="OpenTracing/Datadog">
+        <allowedValue label="AppDynamics">
+            <value>appdynamics</value>
+        </allowedValue>
+        <allowedValue label="Datadog">
+            <value>datadog</value>
+        </allowedValue>
+        <allowedValue label="OpenTelemetry">
+            <value>opentelemetry</value>
+        </allowedValue>
+        <allowedValue label="OpenTracing">
             <value>opentracing</value>
         </allowedValue>
-        <allowedValue label="OpenTelemetry/Lightstep">
-            <value>opentelemetry</value>
+        <allowedValue label="Lightstep">
+            <value>lightstep</value>
         </allowedValue>
         <allowedValue label="New Relic">
             <value>newrelic</value>
@@ -67,7 +76,10 @@
             <allowedValue label="Use APM Payload">
                 <value>payload</value>
             </allowedValue>
-            <allowedValue label="Use Parent ID">
+            <allowedValue label="Use W3C Headers">
+                <value>w3c</value>
+            </allowedValue>
+            <allowedValue label="Use Parent ID Header">
                 <value>parentid</value>
             </allowedValue>
             <allowedValue label="Ignore">

@@ -24,6 +24,16 @@
     <orderEntry type="library" name="Maven: io.opentelemetry:opentelemetry-extension-annotations:0.16.0" level="project" />
     <orderEntry type="library" name="Maven: io.opentelemetry:opentelemetry-api:0.16.0" level="project" />
     <orderEntry type="library" name="Maven: io.opentelemetry:opentelemetry-context:0.16.0" level="project" />
+    <orderEntry type="library" name="Maven: com.appdynamics.agent:agent-api:20.6.0.30246" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.appdynamics.agent:agent:21.2.0">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Documents/dev/lib/appdynamics/21.2.0/javaagent.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.7.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
