@@ -31,6 +31,9 @@
     <field id="eventPlatform" label="Events Platform" type="string">
         <helpText>Events Platform</helpText>
         <defaultValue>datadog</defaultValue>
+        <allowedValue label="AppDynamics">
+            <value>appdynamics</value>
+        </allowedValue>
         <allowedValue label="Datadog">
             <value>datadog</value>
         </allowedValue>

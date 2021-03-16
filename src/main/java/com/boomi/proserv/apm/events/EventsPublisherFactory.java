@@ -10,6 +10,9 @@ public class EventsPublisherFactory {
         }
 
         switch(eventPlatform) {
+            case "appdynamics":
+                s_eventsPublisher = new AppDynamicsEventsPublisher();
+                break;
             case "datadog":
                 s_eventsPublisher = new DatadogEventsPublisher();
                 break;
