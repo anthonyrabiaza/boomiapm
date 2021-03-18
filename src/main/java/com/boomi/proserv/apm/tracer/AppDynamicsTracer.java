@@ -16,7 +16,8 @@ import java.util.logging.Logger;
 
 public class AppDynamicsTracer extends Tracer {
 
-    public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    @Override
+    public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Adding AppDynamics trace ...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
@@ -36,9 +37,11 @@ public class AppDynamicsTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("AppDynamics trace not added " + e);
         }
+        super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
-    public void stop(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    @Override
+    public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Ending AppDynamics trace ...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
@@ -51,6 +54,7 @@ public class AppDynamicsTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("AppDynamics trace not added " + e);
         }
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     protected Set<DataScope> getAllScopes() {

@@ -1,6 +1,7 @@
 package com.boomi.connector.apm;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,33 +69,11 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 		PayloadMetadata metadata 	= response.createMetadata();
 		Tracer tracer 				= TracerFactory.getTracer(platform);
 
-		if(tracer != null) {
-			switch (action) {
-				case "start":
-					tracer.start(logger, boomiContext, metadata);
-					break;
-				case "stop":
-					tracer.stop(logger, boomiContext, metadata);
-					if (sendEvent) {
-						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
-						if (eventsPublisher != null) {
-							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(), false);
-						}
-					}
-					break;
-				case "error":
-					tracer.error(logger, boomiContext, metadata);
-					if (sendEvent) {
-						EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
-						if (eventsPublisher != null) {
-							eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(),true);
-						}
-					}
-					break;
-				default:
-					break;
-			}
+		int payloadSize				= 1;
+		if (request instanceof Collection) {
+			payloadSize = ((Collection<?>) request).size();
 		}
+		int currentPayloadIndex		= 0;
 
 		for (ObjectData input : request) {
 			try {
@@ -107,16 +86,29 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 
 				if(message!=null) {
 					try {
-						if(tracer!=null) {
+						//Only run the Tracer on the first document
+						if(currentPayloadIndex == 0 && tracer!=null) {
 							switch (action) {
 								case "start":
 									tracer.start(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
 									break;
 								case "stop":
 									tracer.stop(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
+									if (sendEvent) {
+										EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
+										if (eventsPublisher != null) {
+											eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(), false);
+										}
+									}
 									break;
 								case "error":
 									tracer.error(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
+									if (sendEvent) {
+										EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
+										if (eventsPublisher != null) {
+											eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(),true);
+										}
+									}
 									break;
 								default:
 									break;
@@ -136,6 +128,7 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 				ResponseUtil.addExceptionFailure(response, input, e);
 			}
 		}
+		currentPayloadIndex++;
 	}
 
 	@Override

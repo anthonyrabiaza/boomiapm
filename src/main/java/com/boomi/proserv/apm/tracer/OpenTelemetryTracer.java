@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class OpenTelemetryTracer extends Tracer {
 
-    public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Adding OpenTelemetry trace ...");
             Span span = Span.current();
@@ -23,7 +23,7 @@ public class OpenTelemetryTracer extends Tracer {
                 span = tracer.spanBuilder(context.getProcessName()).setSpanKind(SpanKind.CLIENT).startSpan();
                 span.makeCurrent();
             }
-            setTraceId(span.getSpanContext().getTraceId(), metadata);
+            setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
             span.setAttribute("boomi.executionID", context.getExecutionId());
             span.setAttribute("boomi.processName", context.getProcessName());
             span.setAttribute("boomi.processID", context.getProcessId());
@@ -31,14 +31,15 @@ public class OpenTelemetryTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTelemetry trace not added " + e);
         }
+        super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
-    public void stop(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTelemetry trace ...");
             Span span = Span.current();
             if(span!=null && span.getSpanContext().isValid()) {
-                setTraceId(span.getSpanContext().getTraceId(), metadata);
+                setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
                 span.end();
                 logger.info("OpenTelemetry trace closed");
             } else {
@@ -47,13 +48,14 @@ public class OpenTelemetryTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTelemetry trace not closed " + e);
         }
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
-    public void error(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTelemetry trace ...");
             Span span = Span.current();
             if(span!=null && span.getSpanContext().isValid()) {
-                setTraceId(span.getSpanContext().getTraceId(), metadata);
+                setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
                 span.setStatus(StatusCode.ERROR, "error");
                 span.end();
                 logger.info("OpenTelemetry trace closed with Error");
@@ -63,7 +65,9 @@ public class OpenTelemetryTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTelemetry trace not closed " + e);
         }
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
+
     @Override
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);

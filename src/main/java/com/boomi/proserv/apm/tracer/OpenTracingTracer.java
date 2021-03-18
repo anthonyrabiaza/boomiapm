@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class OpenTracingTracer extends Tracer {
+
     @Override
-    public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Adding OpenTracing trace ...");
             Span span = GlobalTracer.get().activeSpan();
@@ -20,7 +21,7 @@ public class OpenTracingTracer extends Tracer {
                 span = tracer.buildSpan(context.getProcessName()).withTag("service", context.getServiceName()).start();
                 tracer.activateSpan(span);
             }
-            setTraceId(span.context().toTraceId(), metadata);
+            setTraceId(logger, span.context().toTraceId(), metadata);
             span.setOperationName(context.getProcessName());
             span.setTag("boomi.executionID", context.getExecutionId());
             span.setTag("boomi.processName", context.getProcessName());
@@ -29,15 +30,16 @@ public class OpenTracingTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTracing trace not added " + e);
         }
+        super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     @Override
-    public void stop(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTracing trace ...");
             Span span = GlobalTracer.get().activeSpan();
             if(span!=null) {
-                setTraceId(span.context().toTraceId(), metadata);
+                setTraceId(logger, span.context().toTraceId(), metadata);
                 span.finish();
                 logger.info("OpenTracing trace closed");
             } else {
@@ -46,15 +48,16 @@ public class OpenTracingTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTracing trace not closed " + e);
         }
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     @Override
-    public void error(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+    public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTracing trace ...");
             Span span = GlobalTracer.get().activeSpan();
             if(span!=null) {
-                setTraceId(span.context().toTraceId(), metadata);
+                setTraceId(logger, span.context().toTraceId(), metadata);
                 span.setTag(io.opentracing.tag.Tags.ERROR, true);
                 span.finish();
                 logger.info("OpenTracing trace closed with Error");
@@ -64,8 +67,10 @@ public class OpenTracingTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTracing trace not closed " + e);
         }
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
+    @Override
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
         if(tags.size()>0) {

@@ -22,27 +22,34 @@ public abstract class Tracer {
         this.traceId = traceId;
     }
 
-    public void setTraceId(String traceId, PayloadMetadata metadata) {
+    public void setTraceId(Logger logger, String traceId, PayloadMetadata metadata) {
         this.traceId = traceId;
         if(metadata!=null) {
+            logger.info("traceID:" + traceId);
             metadata.setTrackedProperty("traceID", getTraceId());
         }
     }
 
-    //Executed before processing the documents
-    public void start(Logger logger, BoomiContext context, PayloadMetadata metadata) {}
-    public void stop(Logger logger, BoomiContext context, PayloadMetadata metadata) {}
-    public void error(Logger logger, BoomiContext context, PayloadMetadata metadata) {}
-
-    //Executed with the documents list, thus have access to document and document properties
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
-        addTags(dynProps);
+        try {
+            addTags(dynProps);
+        } catch (Exception e) {
+            logger.severe("Error adding tags:" + e.getMessage());
+        }
     }
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
-        addTags(dynProps);
+        try {
+            addTags(dynProps);
+        } catch (Exception e) {
+            logger.severe("Error adding tags:" + e.getMessage());
+        }
     }
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
-        addTags(dynProps);
+        try {
+            addTags(dynProps);
+        } catch (Exception e) {
+            logger.severe("Error adding tags:" + e.getMessage());
+        }
     }
 
     protected abstract void addTags(Map<String, String> dynProps);

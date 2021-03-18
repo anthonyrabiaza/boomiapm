@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 public class NewRelicTracer extends Tracer {
     @Override
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
-        super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
-
         RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
         switch (realTimeProcessing) {
             case payload:
@@ -33,6 +31,7 @@ public class NewRelicTracer extends Tracer {
                         NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
                         NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
                         metadata.setTrackedProperty("tracePayload", newrelic);
+                        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -54,7 +53,7 @@ public class NewRelicTracer extends Tracer {
                         NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
                         NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
                         NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
-                        //metadata.setTrackedProperty("tracePayload", newrelic);
+                        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -71,12 +70,8 @@ public class NewRelicTracer extends Tracer {
                         logger.info("Continuing transaction using newrelic parentId");
                         NewRelic.addCustomParameter("parentId", parentID);
                         metadata.setTrackedProperty("parentID", parentID);
+                        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
 
-                        traceID = NewRelic.getAgent().getTraceMetadata().getTraceId();
-                        setTraceId(traceID);
-                        metadata.setTrackedProperty("traceID", traceID);
-
-                        logger.info("traceID:" + traceID);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -87,12 +82,11 @@ public class NewRelicTracer extends Tracer {
             default:
                 break;
         }
+        super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     @Override
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
-        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
-
         RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
         switch (realTimeProcessing) {
             case payload:
@@ -107,6 +101,7 @@ public class NewRelicTracer extends Tracer {
             default:
                 break;
         }
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     @Override
@@ -127,8 +122,10 @@ public class NewRelicTracer extends Tracer {
             default:
                 break;
         }
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
+    @Override
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
         if(tags.size()>0) {
