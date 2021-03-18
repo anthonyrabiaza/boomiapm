@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>0.42</version>
+    <version>0.45</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -54,6 +54,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                 <version>2.3.8</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -71,6 +78,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <artifactId>common-sdk</artifactId>
             <version>1.1.9</version>
         </dependency>
+        <!--NewRelic-->
         <dependency>
             <groupId>com.newrelic.agent.java</groupId>
             <artifactId>newrelic-api</artifactId>
@@ -83,25 +91,96 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>0.75.0</version>
             <scope>provided</scope>
         </dependency>
+        <!--End NewRelic-->
+        <!--OpenTracing-->
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-util</artifactId>
             <version>0.33.0</version>
         </dependency>
+        <!--End OpenTracing-->
+        <!--OpenTelemetry-->
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <!--scope>provided</scope-->
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporters-otlp</artifactId>
+            <version>0.9.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-extension-otproto</artifactId>
+            <version>0.9.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-common</artifactId>
+            <version>0.9.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-contrib-auto-config</artifactId>
+            <version>0.5.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--End OpenTelemetry-->
+        <!--
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-extension-annotations</artifactId>
-            <version>0.16.0</version>
+            <version>1.0.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
-            <version>0.16.0</version>
+            <version>1.0.1</version>
+            <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk</artifactId>
+            <version>1.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-common</artifactId>
+            <version>1.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+            <version>1.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp-trace</artifactId>
+            <version>1.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>agent</artifactId>
+            <version>1.0.1</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/Documents/dev/lib/opentelemetry/1.0.0/opentelemetry-javaagent-all.jar</systemPath>
+        </dependency>
+        -->
+        <!--AppDynamics-->
         <dependency>
             <groupId>com.appdynamics.agent</groupId>
             <artifactId>agent-api</artifactId>
             <version>20.6.0.30246</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.appdynamics.agent</groupId>
@@ -110,6 +189,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <scope>system</scope>
             <systemPath>/home/ant/Documents/dev/lib/appdynamics/21.2.0/javaagent.jar</systemPath>
         </dependency>
+        <!--End AppDynamics-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -122,6 +202,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+        <!--Boomi Runtime-->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
@@ -150,6 +231,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <scope>system</scope>
             <systemPath>/home/ant/Documents/dev/lib/boomi/document-sdk-api.jar</systemPath>
         </dependency>
+        <!--End Boomi Runtime-->
     </dependencies>
 
     <build>

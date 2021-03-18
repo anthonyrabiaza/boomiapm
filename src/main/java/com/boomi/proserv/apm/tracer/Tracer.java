@@ -9,6 +9,9 @@ import java.util.logging.Logger;
 
 public abstract class Tracer {
 
+    protected static String s_serviceName;
+    protected static String s_serviceVersion;
+
     private String traceId;
 
     public String getTraceId() {
@@ -17,6 +20,13 @@ public abstract class Tracer {
 
     public void setTraceId(String traceId) {
         this.traceId = traceId;
+    }
+
+    public void setTraceId(String traceId, PayloadMetadata metadata) {
+        this.traceId = traceId;
+        if(metadata!=null) {
+            metadata.setTrackedProperty("traceID", getTraceId());
+        }
     }
 
     //Executed before processing the documents
