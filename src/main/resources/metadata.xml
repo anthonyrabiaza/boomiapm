@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
-	<type>Get_Decrypt</type>
-	<type>Get_Encrypt</type>
+	<type>Update</type>
 </types>

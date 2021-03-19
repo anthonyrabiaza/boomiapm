@@ -38,9 +38,8 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 		String platform 		= getContext().getConnectionProperties().getProperty("platform");
 		String action 			= getContext().getOperationProperties().getProperty("action");
 
-		String eventPlatform 	= getContext().getConnectionProperties().getProperty("eventPlatform");
 		boolean sendEvent 		= getContext().getOperationProperties().getBooleanProperty("sendEvent");
-		String apiURL 			= getContext().getConnectionProperties().getProperty("apiURL");
+		String apiURL 			= getContext().getConnectionProperties().getProperty("eventsAPIURL");
 		String apiKey 			= getContext().getConnectionProperties().getProperty("apiKey");
 		String appKey 			= getContext().getConnectionProperties().getProperty("appKey");
 		String serviceName		= getContext().getConnectionProperties().getProperty("serviceName");
@@ -95,7 +94,7 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 								case "stop":
 									tracer.stop(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
 									if (sendEvent) {
-										EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
+										EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
 										if (eventsPublisher != null) {
 											eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(), false);
 										}
@@ -104,7 +103,7 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 								case "error":
 									tracer.error(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
 									if (sendEvent) {
-										EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(eventPlatform);
+										EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
 										if (eventsPublisher != null) {
 											eventsPublisher.sendEvents(logger, boomiContext, apiURL, apiKey, appKey, tracer.getTraceId(),true);
 										}

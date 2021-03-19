@@ -28,36 +28,26 @@
         </allowedValue>
     </field>
 
-    <field id="eventPlatform" label="Events Platform" type="string">
-        <helpText>Events Platform</helpText>
-        <defaultValue>datadog</defaultValue>
-        <allowedValue label="AppDynamics">
-            <value>appdynamics</value>
-        </allowedValue>
-        <allowedValue label="Datadog">
-            <value>datadog</value>
-        </allowedValue>
-        <allowedValue label="OpenTelemetry/Lightstep">
-            <value>opentelemetry</value>
-        </allowedValue>
-        <allowedValue label="Disabled">
-            <value>disabled</value>
-        </allowedValue>
-    </field>
-
-    <field id="apiURL" label="API Endpoint" type="string">
-        <helpText>API Endpoint in the form of a URL</helpText>
+    <field id="eventsAPIURL" label="Events API Endpoint" type="string">
+        <helpText>API Endpoint in the form of a URL for Events</helpText>
         <defaultValue>https://api.datadoghq.eu/api/v1/events</defaultValue>
     </field>
+
+    <field id="metricsAPIURL" label="Metrics API Endpoint" type="string">
+        <helpText>API Endpoint in the form of a URL for Metrics</helpText>
+        <defaultValue>https://api.datadoghq.eu/api/v1/series</defaultValue>
+    </field>
+
     <field id="apiKey" label="API Key" type="password">
         <helpText>Platform API Key</helpText>
     </field>
     <field id="appKey" label="App Key" type="password">
         <helpText>Platform APP Key</helpText>
     </field>
+
     <field id="serviceName" label="Service Name" type="string">
         <helpText>Boomi Service Name for APM</helpText>
-        <defaultValue>BoomiMolecule</defaultValue>
+        <defaultValue>boomimolecule</defaultValue>
     </field>
 
     <operation types="EXECUTE" inputType="binary" outputType="binary">
@@ -92,6 +82,15 @@
 
         <field type="boolean" id="sendEvent" label="Send Event">
             <defaultValue>true</defaultValue>
+        </field>
+    </operation>
+
+    <operation types="UPDATE" supportsBrowse="true">
+        <field type="string" id="action" label="Action">
+            <defaultValue>publishMetrics</defaultValue>
+            <allowedValue label="Publish Metrics">
+                <value>publishMetrics</value>
+            </allowedValue>
         </field>
     </operation>
 

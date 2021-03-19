@@ -29,6 +29,11 @@ public class BoomiAPMConnector extends BaseConnector {
         return new BoomiAPMExecuteOperation(createConnection(context));
     }
 
+    @Override
+    protected Operation createUpdateOperation(OperationContext context) {
+        return new BoomiAPMUpdateOperation(createConnection(context));
+    }
+
     private BoomiAPMConnection createConnection(BrowseContext context) {
         return new BoomiAPMConnection(context);
     }

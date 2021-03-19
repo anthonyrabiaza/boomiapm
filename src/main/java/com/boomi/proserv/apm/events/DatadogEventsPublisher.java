@@ -96,7 +96,8 @@ public class DatadogEventsPublisher extends EventsPublisher {
             headers.put("Content-Type", "application/json");
             headers.put("DD-API-KEY", apiKey);
             headers.put("DD-APPLICATION-KEY", appKey);
-            postRequest(url, body.toString(), headers);
+            String response = postRequest(url, body.toString(), headers);
+            logger.info("Response:" + response);
         } catch (Exception e) {
             logger.severe("Error when Sending events to Datadog: " + e.getMessage());
             logger.severe(convertStackTraceToString(e));

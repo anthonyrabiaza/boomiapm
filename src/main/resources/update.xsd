@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Update" type="update_choice">
+        <xs:annotation>
+            <xs:documentation>Update
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="update_choice">
+        <xs:choice>
+            <xs:element maxOccurs="1" minOccurs="1" type="publish_metrics" name="publish_metrics"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="publish_metrics">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="1" name="metric"
+                        type="xs:normalizedString">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <rest:metadata indexed="true" required="true"
+                                       xmlns:rest="uri:com.boomi.rest" />
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="type"
+                        type="xs:normalizedString">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <rest:metadata indexed="true" required="false"
+                                       xmlns:rest="uri:com.boomi.rest" />
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="value"
+                        type="xs:normalizedString">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <rest:metadata indexed="true" required="true"
+                                       xmlns:rest="uri:com.boomi.rest" />
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
