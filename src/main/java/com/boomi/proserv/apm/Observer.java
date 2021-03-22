@@ -80,6 +80,10 @@ public abstract class Observer {
         return String.valueOf(System.currentTimeMillis() / 1000L);
     }
 
+    protected String getTimestampMinusOrPlusSeconds(int seconds) {
+        return String.valueOf(((System.currentTimeMillis() / 1000L) + seconds));
+    }
+
     protected String convertStackTraceToString(Throwable throwable) {
         try (StringWriter sw = new StringWriter();
              PrintWriter pw = new PrintWriter(sw))

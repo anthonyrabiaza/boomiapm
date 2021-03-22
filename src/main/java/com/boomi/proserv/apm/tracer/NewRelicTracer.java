@@ -3,10 +3,7 @@ package com.boomi.proserv.apm.tracer;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 
-import com.newrelic.api.agent.ConcurrentHashMapHeaders;
-import com.newrelic.api.agent.HeaderType;
-import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.TransportType;
+import com.newrelic.api.agent.*;
 
 import java.util.Base64;
 import java.util.Map;
@@ -27,11 +24,8 @@ public class NewRelicTracer extends Tracer {
                     try {
                         logger.info("Continuing transaction using newrelic payload");
                         NewRelic.getAgent().getTransaction().acceptDistributedTracePayload(newrelic);
-                        NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
-                        NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
-                        NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
+                        addContext(logger, context, metadata);
                         metadata.setTrackedProperty("tracePayload", newrelic);
-                        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -50,10 +44,7 @@ public class NewRelicTracer extends Tracer {
                         headers.addHeader("traceparent", traceparent);
                         headers.addHeader("tracestate", tracestate);
                         NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.HTTP, headers);
-                        NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
-                        NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
-                        NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
-                        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
+                        addContext(logger, context, metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -70,8 +61,7 @@ public class NewRelicTracer extends Tracer {
                         logger.info("Continuing transaction using newrelic parentId");
                         NewRelic.addCustomParameter("parentId", parentID);
                         metadata.setTrackedProperty("parentID", parentID);
-                        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
-
+                        addContext(logger, context, metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -79,7 +69,13 @@ public class NewRelicTracer extends Tracer {
                     logger.warning("NewRelic parentid not found ");
                 }
                 break;
-            default:
+            default://TO BE TESTED
+                try {
+                    NewRelic.setTransactionName("Custom", context.getProcessName());
+                    addContext(logger, context, metadata);
+                } catch (Exception e) {
+                    logger.severe("NewRelic context not added " + e);
+                }
                 break;
         }
         super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
@@ -123,6 +119,13 @@ public class NewRelicTracer extends Tracer {
                 break;
         }
         super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
+    }
+
+    protected void addContext(Logger logger, BoomiContext context, PayloadMetadata metadata) {
+        NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
+        NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
+        NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
+        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class DatadogMetricsPublisher extends MetricsPublisher {
+
     @Override
     public void sendMetrics(Logger logger, BoomiContext boomiContext, String url, String apiKey, String appKey, String metric, String type, String value) {
         try {

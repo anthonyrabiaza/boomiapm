@@ -56,7 +56,7 @@
             <allowedValue label="Start Trace">
                 <value>start</value>
             </allowedValue>
-            <allowedValue label="End Trace">
+            <allowedValue label="Stop Trace">
                 <value>stop</value>
             </allowedValue>
             <allowedValue label="Error">

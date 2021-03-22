@@ -1,7 +1,6 @@
 package com.boomi.proserv.apm.events;
 
 import com.boomi.proserv.apm.BoomiContext;
-import datadog.trace.api.DisableTestTrace;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.logging.Logger;
 
 public class DatadogEventsPublisher extends EventsPublisher {
 
-    @DisableTestTrace
     @Override
     public void sendEvents(Logger logger, BoomiContext boomiContext, String url, String apiKey, String appKey, String traceId, boolean error) {
         try {
@@ -45,6 +43,14 @@ public class DatadogEventsPublisher extends EventsPublisher {
             body.append("[See Process Execution]");
             body.append("(");
             body.append("https://platform.boomi.com/#search;accountId=");body.append(boomiContext.getAccountId());body.append(";executionId=");body.append(boomiContext.getExecutionId());
+            body.append(") | ");
+            body.append("[See Logs]");
+            body.append("(");
+            body.append("/logs?from_ts=");body.append(getTimestampMinusOrPlusSeconds(-10));body.append("000");
+            body.append("&to_ts=");body.append(getTimestampMinusOrPlusSeconds(+10));body.append("999");
+            body.append("&index=%2A");//*
+            body.append("&query=service%3A");body.append(boomiContext.getServiceName());
+            body.append("+host%3A");body.append(getHostname());
             body.append(")");
             body.append("\\n %%%");//Markdown end
             body.append("\",");
@@ -62,7 +68,7 @@ public class DatadogEventsPublisher extends EventsPublisher {
             body.append("\",");
 
             body.append("\"date_happened\": ");
-            body.append(System.currentTimeMillis() / 1000L);
+            body.append(getTimestamp());
             body.append(",");
 
             body.append("\"device_name\": \"");

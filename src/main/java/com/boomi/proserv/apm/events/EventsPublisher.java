@@ -3,16 +3,6 @@ package com.boomi.proserv.apm.events;
 import com.boomi.proserv.apm.BoomiContext;
 import com.boomi.proserv.apm.Observer;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public abstract class EventsPublisher extends Observer {
