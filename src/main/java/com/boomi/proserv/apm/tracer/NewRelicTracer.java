@@ -2,8 +2,11 @@ package com.boomi.proserv.apm.tracer;
 
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
+import com.newrelic.api.agent.ConcurrentHashMapHeaders;
+import com.newrelic.api.agent.HeaderType;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.TransportType;
 
-import com.newrelic.api.agent.*;
 
 import java.util.Base64;
 import java.util.Map;
@@ -33,17 +36,33 @@ public class NewRelicTracer extends Tracer {
                     logger.warning("NewRelic trace not found ");
                 }
                 break;
-            case w3c://TO BE TESTED
+            case w3c:
                 String traceparent  = getTraceparent(properties);
                 String tracestate   = getTracestate(properties);
 
                 if (traceparent!=null && !"".equals(traceparent) && tracestate!=null && !"".equals(tracestate)) {
                     try {
                         logger.info("Continuing transaction using newrelic w3c");
-                        ConcurrentHashMapHeaders headers = ConcurrentHashMapHeaders.build(HeaderType.HTTP);
-                        headers.addHeader("traceparent", traceparent);
-                        headers.addHeader("tracestate", tracestate);
-                        NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.HTTP, headers);
+                        HeaderType headerType;
+                        TransportType transportType;
+                        switch (getComponentType()){
+                            case HTTP:
+                                headerType = HeaderType.HTTP;
+                                transportType = TransportType.HTTPS;
+                                break;
+                            case JMS:
+                                headerType = HeaderType.MESSAGE;
+                                transportType = TransportType.JMS;
+                                break;
+                            default:
+                                headerType = HeaderType.HTTP;
+                                transportType = TransportType.HTTPS;
+                                break;
+                        }
+                        ConcurrentHashMapHeaders headers = ConcurrentHashMapHeaders.build(headerType);
+                        headers.addHeader(TRACEPARENT, traceparent);
+                        headers.addHeader(TRACESTATE,  tracestate);
+                        NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(transportType, headers);
                         addContext(logger, context, metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);

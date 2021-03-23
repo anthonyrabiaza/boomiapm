@@ -2,6 +2,7 @@ package com.boomi.proserv.apm.tracer;
 
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
+import com.boomi.proserv.apm.ComponentType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,8 +10,16 @@ import java.util.logging.Logger;
 
 public abstract class Tracer {
 
+    public static final String TRACEPARENT = "traceparent";
+    public static final String TRACESTATE = "tracestate";
     protected static String s_serviceName;
     protected static String s_serviceVersion;
+
+    protected ComponentType componentType = ComponentType.HTTP;
+
+    public ComponentType getComponentType(){
+        return componentType;
+    }
 
     private String traceId;
 
@@ -57,7 +66,8 @@ public abstract class Tracer {
     protected String getTraceparent(Map<String, String> properties){
         String traceparent = properties.get("inheader_traceparent");//HTTP
         if (traceparent == null || traceparent.equals("")) {
-            traceparent = properties.get("traceparent");//JMS
+            traceparent = properties.get(TRACEPARENT);//JMS
+            componentType = ComponentType.JMS;
         }
         return traceparent;
     }
@@ -65,7 +75,8 @@ public abstract class Tracer {
     protected String getTracestate(Map<String, String> properties) {
         String tracestate = properties.get("inheader_tracestate");//HTTP
         if (tracestate == null || tracestate.equals("")) {
-            tracestate = properties.get("tracestate");//JMS
+            tracestate = properties.get(TRACESTATE);//JMS
+            componentType = ComponentType.JMS;
         }
         return tracestate;
     }

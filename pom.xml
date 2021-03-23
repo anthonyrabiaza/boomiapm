@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>0.59</version>
+    <version>0.63</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -85,13 +85,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>6.4.2</version>
             <scope>provided</scope>
         </dependency>
+        <!--End NewRelic-->
+        <!--Datadog-->
         <dependency>
             <groupId>com.datadoghq</groupId>
             <artifactId>dd-trace-api</artifactId>
             <version>0.75.0</version>
             <scope>provided</scope>
         </dependency>
-        <!--End NewRelic-->
+        <!--End Datadog-->
         <!--OpenTracing-->
         <dependency>
             <groupId>io.opentracing</groupId>
