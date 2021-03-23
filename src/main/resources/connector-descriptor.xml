@@ -66,7 +66,7 @@
 
         <field type="string" id="realTimeProcessing" label="Realtime Processing">
             <defaultValue>ignore</defaultValue>
-            <allowedValue label="Use APM Payload">
+            <allowedValue label="Use APM Proprietary Headers">
                 <value>payload</value>
             </allowedValue>
             <allowedValue label="Use W3C Headers">
