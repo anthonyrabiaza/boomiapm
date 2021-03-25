@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>0.63</version>
+    <version>0.70</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -100,6 +100,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <artifactId>opentracing-util</artifactId>
             <version>0.33.0</version>
         </dependency>
+        <!-- To be added via Custom Library-->
+        <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-tracerresolver</artifactId>
+            <version>0.1.8</version>
+            <scope>provided</scope>
+        </dependency>
         <!--End OpenTracing-->
         <!--OpenTelemetry-->
         <dependency>
@@ -192,6 +199,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <systemPath>/home/ant/Documents/dev/lib/appdynamics/21.2.0/javaagent.jar</systemPath>
         </dependency>
         <!--End AppDynamics-->
+        <!--ElasticAPM-->
+        <!--
+        To be added via Custom Library, runtime call to the class will be done by ElasticAPMTracer.getTracer()
+        <dependency>
+            <groupId>co.elastic.apm</groupId>
+            <artifactId>apm-opentracing</artifactId>
+            <version>1.22.0</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        <!--End ElasticAPM-->
+        <!--JUnit-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -204,6 +223,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+        <!--End JUnit-->
         <!--Boomi Runtime-->
         <dependency>
             <groupId>javax.xml.bind</groupId>

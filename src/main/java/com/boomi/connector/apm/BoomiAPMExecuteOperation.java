@@ -114,7 +114,7 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 							}
 						}
 						response.addResult(input, OperationStatus.SUCCESS, "200", "OK", PayloadUtil.toPayload(result, metadata));
-					} catch (Exception e) {
+					} catch (Exception e) {//FIXME if NoClassFound
 						logger.severe(e.getMessage());
 						e.printStackTrace();
 						throw e;

@@ -11,6 +11,9 @@
         <allowedValue label="Datadog">
             <value>datadog</value>
         </allowedValue>
+        <allowedValue label="ElasticAPM">
+            <value>elasticapm</value>
+        </allowedValue>
         <allowedValue label="Lightstep">
             <value>lightstep</value>
         </allowedValue>

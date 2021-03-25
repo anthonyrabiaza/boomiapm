@@ -17,6 +17,9 @@ public class TracerFactory {
             case "opentracing":
                 s_tracer = new OpenTracingTracer();
                 break;
+            case "elasticapm":
+                s_tracer = new ElasticAPMTracer();
+                break;
             case "lightstep":
             case "opentelemetry":
                 s_tracer = new OpenTelemetryTracer();

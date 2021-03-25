@@ -15,9 +15,9 @@ public class OpenTracingTracer extends Tracer {
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Adding OpenTracing trace ...");
-            Span span = GlobalTracer.get().activeSpan();
-            if(span==null) {
-                io.opentracing.Tracer tracer = GlobalTracer.get();
+            Span span = getSpan();
+            if(!isValid(span)) {
+                io.opentracing.Tracer tracer = getTracer(logger);
                 span = tracer.buildSpan(context.getProcessName()).withTag("service", context.getServiceName()).start();
                 tracer.activateSpan(span);
             }
@@ -37,8 +37,8 @@ public class OpenTracingTracer extends Tracer {
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTracing trace ...");
-            Span span = GlobalTracer.get().activeSpan();
-            if(span!=null) {
+            Span span = getSpan();
+            if(isValid(span)) {
                 setTraceId(logger, span.context().toTraceId(), metadata);
                 span.finish();
                 logger.info("OpenTracing trace closed");
@@ -55,8 +55,8 @@ public class OpenTracingTracer extends Tracer {
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTracing trace ...");
-            Span span = GlobalTracer.get().activeSpan();
-            if(span!=null) {
+            Span span = getSpan();
+            if(isValid(span)) {
                 setTraceId(logger, span.context().toTraceId(), metadata);
                 span.setTag(io.opentracing.tag.Tags.ERROR, true);
                 span.finish();
@@ -74,10 +74,23 @@ public class OpenTracingTracer extends Tracer {
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
         if(tags.size()>0) {
-            Span span = GlobalTracer.get().activeSpan();
+            Span span = getSpan();
             for (Map.Entry<String, String> entry : tags.entrySet()) {
                 span.setTag(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    protected Span getSpan() {
+        return GlobalTracer.get().activeSpan();
+    }
+
+    protected io.opentracing.Tracer getTracer(Logger logger) {
+        logger.info("Getting OpenTracing tracer ...");
+        return GlobalTracer.get();
+    }
+
+    protected boolean isValid(Span span) {
+        return span != null;
     }
 }
