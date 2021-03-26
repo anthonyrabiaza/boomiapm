@@ -114,10 +114,11 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 							}
 						}
 						response.addResult(input, OperationStatus.SUCCESS, "200", "OK", PayloadUtil.toPayload(result, metadata));
-					} catch (Exception e) {//FIXME if NoClassFound
+					} catch (Exception e) {
 						logger.severe(e.getMessage());
 						e.printStackTrace();
-						throw e;
+						response.addResult(input, OperationStatus.SUCCESS, "200", "OK", PayloadUtil.toPayload(result, metadata));
+						//throw e;
 					}
 				}
 				log(logger, log, "ARA: Document processed");

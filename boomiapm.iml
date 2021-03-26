@@ -21,6 +21,7 @@
     <orderEntry type="library" name="Maven: io.opentracing:opentracing-util:0.33.0" level="project" />
     <orderEntry type="library" name="Maven: io.opentracing:opentracing-api:0.33.0" level="project" />
     <orderEntry type="library" name="Maven: io.opentracing:opentracing-noop:0.33.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.opentracing.contrib:opentracing-tracerresolver:0.1.8" level="project" />
     <orderEntry type="library" name="Maven: io.opentelemetry:opentelemetry-api:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: io.opentelemetry:opentelemetry-context:1.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.opentelemetry:opentelemetry-exporters-otlp:0.9.1" level="project" />

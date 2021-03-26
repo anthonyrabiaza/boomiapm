@@ -4,8 +4,13 @@ import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 
 import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
+import io.opentracing.propagation.TextMapAdapter;
 import io.opentracing.util.GlobalTracer;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -14,12 +19,49 @@ public class OpenTracingTracer extends Tracer {
     @Override
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
-            logger.info("Adding OpenTracing trace ...");
+            logger.info("Looking for OpenTracing trace ...");
             Span span = getSpan();
             if(!isValid(span)) {
+                logger.info("Trace not found...");
                 io.opentracing.Tracer tracer = getTracer(logger);
-                span = tracer.buildSpan(context.getProcessName()).withTag("service", context.getServiceName()).start();
+                if(rtProcess==null || "".equals(rtProcess)) {
+                    logger.info("Creating OpenTracing trace ...");
+                    span = tracer.buildSpan(context.getProcessName()).withTag("service", context.getServiceName()).start();
+                } else {
+                    RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
+                    if(RealTimeProcessing.w3c.equals(realTimeProcessing)) {
+                        logger.info("Continuing transaction using w3c header ...");
+                        String traceparent = getTraceparent(properties);
+                        if(traceparent!=null && !traceparent.equals("")) {
+                            Format format;
+                            switch (getComponentType()) {
+                                case JMS:
+                                    format = Format.Builtin.TEXT_MAP;
+                                    break;
+                                case HTTP:
+                                default:
+                                    format = Format.Builtin.HTTP_HEADERS;
+                                    break;
+                            }
+                            Map<String, String> map = new HashMap<String, String>();
+                            map.put(TRACEPARENT, traceparent);
+                            TextMapAdapter textMapAdapter = new TextMapAdapter(map);
+                            SpanContext spanContext = tracer.extract(format, textMapAdapter);
+                            io.opentracing.Tracer.SpanBuilder spanBuilder;
+                            if (spanContext == null) {
+                                spanBuilder = tracer.buildSpan(context.getProcessName());
+                            } else {
+                                spanBuilder = tracer.buildSpan(context.getProcessName()).asChildOf(spanContext);
+                            }
+                            span = spanBuilder.start();
+                        } else {
+                            logger.warning("w3c header not found");
+                        }
+                    }
+                }
                 tracer.activateSpan(span);
+            } else {
+                logger.info("Trace found, setting tags ...");
             }
             setTraceId(logger, span.context().toTraceId(), metadata);
             span.setOperationName(context.getProcessName());

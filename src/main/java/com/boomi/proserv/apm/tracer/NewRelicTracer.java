@@ -42,21 +42,18 @@ public class NewRelicTracer extends Tracer {
 
                 if (traceparent!=null && !"".equals(traceparent) && tracestate!=null && !"".equals(tracestate)) {
                     try {
-                        logger.info("Continuing transaction using newrelic w3c");
+                        logger.info("Continuing transaction using newrelic w3c headers");
                         HeaderType headerType;
                         TransportType transportType;
                         switch (getComponentType()){
-                            case HTTP:
-                                headerType = HeaderType.HTTP;
-                                transportType = TransportType.HTTPS;
-                                break;
                             case JMS:
-                                headerType = HeaderType.MESSAGE;
-                                transportType = TransportType.JMS;
+                                headerType      = HeaderType.MESSAGE;
+                                transportType   = TransportType.JMS;
                                 break;
+                            case HTTP:
                             default:
-                                headerType = HeaderType.HTTP;
-                                transportType = TransportType.HTTPS;
+                                headerType      = HeaderType.HTTP;
+                                transportType   = TransportType.HTTPS;
                                 break;
                         }
                         ConcurrentHashMapHeaders headers = ConcurrentHashMapHeaders.build(headerType);
