@@ -5,7 +5,7 @@ import io.opentracing.contrib.tracerresolver.TracerResolver;
 
 import java.util.logging.Logger;
 
-public class ElasticAPMTracer extends OpenTracingTracer {
+public class OpenTracerResolver extends OpenTracingTracer {
 
     @Override
     protected io.opentracing.Tracer getTracer(Logger logger) {

@@ -26,6 +26,9 @@
         <allowedValue label="OpenTracing">
             <value>opentracing</value>
         </allowedValue>
+        <allowedValue label="OpenTracing (Resolver)">
+            <value>opentracing_resolver</value>
+        </allowedValue>
         <allowedValue label="Disabled">
             <value>disabled</value>
         </allowedValue>
