@@ -50,7 +50,8 @@ public class DatadogEventsPublisher extends EventsPublisher {
             body.append("&to_ts=");body.append(getTimestampMinusOrPlusSeconds(+10));body.append("999");
             body.append("&index=%2A");//*
             body.append("&query=service%3A");body.append(boomiContext.getServiceName());
-            body.append("+host%3A");body.append(getHostname());
+            body.append("+environment%3A");body.append(getEnvironment());//Skipping hostname
+            //body.append("+host%3A");body.append(getHostname());//Skipping hostname
             body.append(")");
             body.append("\\n %%%");//Markdown end
             body.append("\",");
@@ -108,5 +109,9 @@ public class DatadogEventsPublisher extends EventsPublisher {
             logger.severe("Error when Sending events to Datadog: " + e.getMessage());
             logger.severe(convertStackTraceToString(e));
         }
+    }
+
+    public String getEnvironment(){
+        return System.getProperty("dd.env");
     }
 }
