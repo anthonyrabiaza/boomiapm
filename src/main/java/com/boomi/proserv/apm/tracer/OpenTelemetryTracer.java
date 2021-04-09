@@ -24,9 +24,9 @@ public class OpenTelemetryTracer extends Tracer {
                 span.makeCurrent();
             }
             setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
-            span.setAttribute("boomi.executionID", context.getExecutionId());
-            span.setAttribute("boomi.processName", context.getProcessName());
-            span.setAttribute("boomi.processID", context.getProcessId());
+            span.setAttribute(BOOMI_EXECUTION_ID, context.getExecutionId());
+            span.setAttribute(BOOMI_PROCESS_NAME, context.getProcessName());
+            span.setAttribute(BOOMI_PROCESS_ID, context.getProcessId());
             logger.info("OpenTelemetry trace added");
         } catch (Exception e) {
             logger.severe("OpenTelemetry trace not added " + e);
@@ -56,7 +56,7 @@ public class OpenTelemetryTracer extends Tracer {
             Span span = Span.current();
             if(span!=null && span.getSpanContext().isValid()) {
                 setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
-                span.setStatus(StatusCode.ERROR, "error");
+                span.setStatus(StatusCode.ERROR, getErrorMessage());
                 span.end();
                 logger.info("OpenTelemetry trace closed with Error");
             } else {

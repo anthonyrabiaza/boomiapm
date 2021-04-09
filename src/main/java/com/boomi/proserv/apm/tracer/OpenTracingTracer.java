@@ -65,9 +65,9 @@ public class OpenTracingTracer extends Tracer {
             }
             setTraceId(logger, span.context().toTraceId(), metadata);
             span.setOperationName(context.getProcessName());
-            span.setTag("boomi.executionID", context.getExecutionId());
-            span.setTag("boomi.processName", context.getProcessName());
-            span.setTag("boomi.processID", context.getProcessId());
+            span.setTag(BOOMI_EXECUTION_ID, context.getExecutionId());
+            span.setTag(BOOMI_PROCESS_NAME, context.getProcessName());
+            span.setTag(BOOMI_PROCESS_ID, context.getProcessId());
             logger.info("OpenTracing trace added");
         } catch (Exception e) {
             logger.severe("OpenTracing trace not added " + e);
@@ -101,6 +101,7 @@ public class OpenTracingTracer extends Tracer {
             if(isValid(span)) {
                 setTraceId(logger, span.context().toTraceId(), metadata);
                 span.setTag(io.opentracing.tag.Tags.ERROR, true);
+                span.setTag(BOOMI_ERROR_MESSAGE, getErrorMessage());
                 span.finish();
                 logger.info("OpenTracing trace closed with Error");
             } else {

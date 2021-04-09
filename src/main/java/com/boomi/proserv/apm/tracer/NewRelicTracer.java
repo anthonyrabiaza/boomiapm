@@ -134,13 +134,14 @@ public class NewRelicTracer extends Tracer {
             default:
                 break;
         }
+        NewRelic.addCustomParameter(BOOMI_ERROR_MESSAGE, getErrorMessage());
         super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     protected void addContext(Logger logger, BoomiContext context, PayloadMetadata metadata) {
-        NewRelic.addCustomParameter("boomi.executionID", context.getExecutionId());
-        NewRelic.addCustomParameter("boomi.processName", context.getProcessName());
-        NewRelic.addCustomParameter("boomi.processID", context.getProcessId());
+        NewRelic.addCustomParameter(BOOMI_EXECUTION_ID, context.getExecutionId());
+        NewRelic.addCustomParameter(BOOMI_PROCESS_NAME, context.getProcessName());
+        NewRelic.addCustomParameter(BOOMI_PROCESS_ID, context.getProcessId());
         setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
     }
 

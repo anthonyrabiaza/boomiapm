@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.boomi.connector.api.*;
+import com.boomi.connector.generic.TrackedBaseData;
 import com.boomi.connector.util.BaseUpdateOperation;
 
 import com.boomi.execution.ExecutionManager;
@@ -16,6 +17,8 @@ import com.boomi.proserv.apm.events.EventsPublisher;
 import com.boomi.proserv.apm.events.EventsPublisherFactory;
 import com.boomi.proserv.apm.tracer.Tracer;
 import com.boomi.proserv.apm.tracer.TracerFactory;
+import com.boomi.store.BaseData;
+import com.boomi.store.MetaData;
 
 /**
  * Execute the Operation, no profile need to be "imported" to the operation (as input are binaries)
@@ -101,7 +104,10 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 									}
 									break;
 								case "error":
+									String errorMessage = getErrorMessage(logger, input);
+									tracer.setErrorMessage(errorMessage);
 									tracer.error(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
+									metadata.setTrackedProperty("errorMessage", errorMessage);
 									if (sendEvent) {
 										EventsPublisher eventsPublisher = EventsPublisherFactory.getEventPublisher(platform);
 										if (eventsPublisher != null) {
@@ -124,11 +130,28 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 				log(logger, log, "ARA: Document processed");
 
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Details of Exception:", e);
+				logger.log(Level.SEVERE, "ARA: Details of Exception:", e);
 				ResponseUtil.addExceptionFailure(response, input, e);
 			}
 		}
 		currentPayloadIndex++;
+	}
+
+	private String getErrorMessage(Logger logger, ObjectData input) {
+		String errorMessage = "Error";
+		try {
+			BaseData baseData = ((TrackedBaseData) input).getBaseData();
+			Collection<MetaData> internalMetadata = baseData.getDataRef().getMetaData(baseData);
+			for (MetaData metadata:internalMetadata) {
+				String tempErrorMessage = metadata.getRawField("catcherrorsmessage_s");
+				if (tempErrorMessage!=null && !tempErrorMessage.equals("")) {
+					errorMessage = tempErrorMessage;
+				}
+			}
+		} catch (Exception e) {
+			logger.warning("ARA: No able to get the error message: " + e.getMessage());
+		}
+		return errorMessage;
 	}
 
 	@Override

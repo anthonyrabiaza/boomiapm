@@ -3,9 +3,7 @@ package com.boomi.proserv.apm.tracer;
 import com.appdynamics.agent.api.AppdynamicsAgent;
 import com.appdynamics.agent.api.EntryTypes;
 import com.appdynamics.agent.api.Transaction;
-import com.appdynamics.apm.appagent.api.AgentDelegate;
 import com.appdynamics.apm.appagent.api.DataScope;
-import com.appdynamics.apm.appagent.api.IMetricAndEventReporter;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 
@@ -29,10 +27,11 @@ public class AppDynamicsTracer extends Tracer {
                 AppdynamicsAgent.setCurrentTransactionName(context.getProcessName());
             }
 
+
             Set<DataScope> dataScopes = getAllScopes();
-            transaction.collectData("boomi.executionID", context.getExecutionId(), dataScopes);
-            transaction.collectData("boomi.processName", context.getProcessName(), dataScopes);
-            transaction.collectData("boomi.processID", context.getProcessId(), dataScopes);
+            transaction.collectData(BOOMI_EXECUTION_ID, context.getExecutionId(), dataScopes);
+            transaction.collectData(BOOMI_PROCESS_NAME, context.getProcessName(), dataScopes);
+            transaction.collectData(BOOMI_PROCESS_ID, context.getProcessId(), dataScopes);
             logger.info("AppDynamics trace added");
         } catch (Exception e) {
             logger.severe("AppDynamics trace not added " + e);
@@ -55,6 +54,19 @@ public class AppDynamicsTracer extends Tracer {
             logger.severe("AppDynamics trace not added " + e);
         }
         super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
+    }
+
+    @Override
+    public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        try {
+            Transaction transaction = AppdynamicsAgent.getTransaction();
+            if(transaction != null) {
+                transaction.collectData(BOOMI_ERROR_MESSAGE, getErrorMessage(), getAllScopes());
+            }
+        } catch (Exception e) {
+            logger.severe("Error adding tags:" + e.getMessage());
+        }
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     protected Set<DataScope> getAllScopes() {

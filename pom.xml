@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>0.77</version>
+    <version>0.79</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -248,10 +248,38 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </dependency>
         <dependency>
             <groupId>com.boomi.document.api</groupId>
-            <artifactId>boomi-document-api</artifactId>
+            <artifactId>boomi-document-api-sdk</artifactId>
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>/home/ant/Documents/dev/lib/boomi/document-sdk-api.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.boomi.store.api</groupId>
+            <artifactId>boomi-store-api</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/Documents/dev/lib/boomi/container-store-api.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.boomi.connector</groupId>
+            <artifactId>boomi-connector</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/Documents/dev/lib/boomi/container-connector.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.boomi.document.api</groupId>
+            <artifactId>boomi-document-api</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/Documents/dev/lib/boomi/container-document-api.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.boomi.model</groupId>
+            <artifactId>boomi-model</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/Documents/dev/lib/boomi/model-platform.jar</systemPath>
         </dependency>
         <!--End Boomi Runtime-->
     </dependencies>

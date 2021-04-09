@@ -10,8 +10,13 @@ import java.util.logging.Logger;
 
 public abstract class Tracer {
 
-    public static final String TRACEPARENT = "traceparent";
-    public static final String TRACESTATE = "tracestate";
+    public static final String BOOMI_EXECUTION_ID   = "boomi.executionID";
+    public static final String BOOMI_PROCESS_NAME   = "boomi.processName";
+    public static final String BOOMI_PROCESS_ID     = "boomi.processID";
+    public static final String BOOMI_ERROR_MESSAGE  = "boomi.errorMessage";
+
+    public static final String TRACEPARENT          = "traceparent";
+    public static final String TRACESTATE           = "tracestate";
     protected static String s_serviceName;
     protected static String s_serviceVersion;
 
@@ -22,6 +27,8 @@ public abstract class Tracer {
     }
 
     private String traceId;
+
+    private String errorMessage;
 
     public String getTraceId() {
         return traceId;
@@ -37,6 +44,14 @@ public abstract class Tracer {
             logger.info("traceID:" + traceId);
             metadata.setTrackedProperty("traceID", getTraceId());
         }
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
