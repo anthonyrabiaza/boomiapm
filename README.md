@@ -11,7 +11,7 @@ The Boomi APM Connector will enable Boomi Runtime for Observability:
 ![Alt text](resources/observabilityp-pyramid.png?raw=true "BoomiAPM")
 ![Alt text](resources/use-case.png?raw=true "BoomiAPM")
 
-## Exhaustive list of Actions
+## List of Actions
 
 | Connection Actions | Operation | Traces    | Events | Metrics |
 | ------------------ | --------- | --------- | ------ | ------- |
@@ -20,7 +20,7 @@ The Boomi APM Connector will enable Boomi Runtime for Observability:
 | Execute            | APM Error | Start     | Yes    | N/A     |
 | Update             | Publish Metrics | N/A | N/A    | Yes     |
 
-## Observability Platform supported
+## Observability Platforms supported
 
 | Platform Name        | Trace     | Events | Metrics |
 | -------------------- | --------- | ------ | ------- |
