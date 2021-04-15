@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenericConnectorDescriptor>
+    <description>Boomi Data Security Processor</description>
+
+    <field id="platform" label="APM Platform" type="string">
+        <helpText>Tracing Platform</helpText>
+        <defaultValue>opentracing</defaultValue>
+        <allowedValue label="AppDynamics">
+            <value>appdynamics</value>
+        </allowedValue>
+        <allowedValue label="Datadog">
+            <value>datadog</value>
+        </allowedValue>
+        <allowedValue label="ElasticAPM">
+            <value>elasticapm</value>
+        </allowedValue>
+        <allowedValue label="Lightstep">
+            <value>lightstep</value>
+        </allowedValue>
+        <allowedValue label="New Relic">
+            <value>newrelic</value>
+        </allowedValue>
+        <allowedValue label="OpenTelemetry">
+            <value>opentelemetry</value>
+        </allowedValue>
+        <allowedValue label="OpenTracing">
+            <value>opentracing</value>
+        </allowedValue>
+        <allowedValue label="OpenTracing (Resolver)">
+            <value>opentracing_resolver</value>
+        </allowedValue>
+        <allowedValue label="Disabled">
+            <value>disabled</value>
+        </allowedValue>
+    </field>
+
+    <field id="eventsAPIURL" label="Events API Endpoint" type="string">
+        <helpText>API Endpoint in the form of a URL for Events</helpText>
+        <defaultValue>https://api.datadoghq.eu/api/v1/events</defaultValue>
+    </field>
+
+    <field id="metricsAPIURL" label="Metrics API Endpoint" type="string">
+        <helpText>API Endpoint in the form of a URL for Metrics</helpText>
+        <defaultValue>https://api.datadoghq.eu/api/v1/series</defaultValue>
+    </field>
+
+    <field id="apiKey" label="API Key" type="password">
+        <helpText>Platform API Key</helpText>
+    </field>
+    <field id="appKey" label="App Key" type="password">
+        <helpText>Platform APP Key</helpText>
+    </field>
+
+    <field id="serviceName" label="Service Name" type="string">
+        <helpText>Boomi Service Name for APM</helpText>
+        <defaultValue>boomimolecule</defaultValue>
+    </field>
+
+    <operation types="EXECUTE" inputType="binary" outputType="binary">
+        <field type="string" id="action" label="Action">
+            <defaultValue>start</defaultValue>
+            <allowedValue label="Start Trace">
+                <value>start</value>
+            </allowedValue>
+            <allowedValue label="Stop Trace">
+                <value>stop</value>
+            </allowedValue>
+            <allowedValue label="Error">
+                <value>error</value>
+            </allowedValue>
+        </field>
+
+        <field type="string" id="realTimeProcessing" label="Realtime Processing">
+            <defaultValue>ignore</defaultValue>
+            <allowedValue label="Use APM Proprietary Headers">
+                <value>payload</value>
+            </allowedValue>
+            <allowedValue label="Use W3C Headers">
+                <value>w3c</value>
+            </allowedValue>
+            <allowedValue label="Use Parent ID Header">
+                <value>parentid</value>
+            </allowedValue>
+            <allowedValue label="Ignore">
+                <value>ignore</value>
+            </allowedValue>
+        </field>
+
+        <field type="boolean" id="sendEvent" label="Send Event">
+            <defaultValue>true</defaultValue>
+        </field>
+    </operation>
+
+    <operation types="UPDATE" supportsBrowse="true">
+        <field type="string" id="action" label="Action">
+            <defaultValue>publishMetrics</defaultValue>
+            <allowedValue label="Publish Metrics">
+                <value>publishMetrics</value>
+            </allowedValue>
+        </field>
+    </operation>
+
+    <dynamicProperty type="string" id="keyvalueTags" label="Tags (k=v separated by ;)"/>
+
+    <trackedProperty id="tracePayload" label="Trace Payload"/>
+    <trackedProperty id="traceID" label="Trace ID"/>
+    <trackedProperty id="parentID" label="Parent ID"/>
+    <trackedProperty id="errorMessage" label="Try/Catch Message"/>
+
+</GenericConnectorDescriptor>
