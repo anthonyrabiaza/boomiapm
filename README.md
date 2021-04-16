@@ -8,7 +8,7 @@ Boomi APM Connector allows:
 
 The Boomi APM Connector will enable Boomi Runtime for Observability:
 
-![Alt text](resources/observabilityp-pyramid.png?raw=true "BoomiAPM")
+![Alt text](resources/observability-pyramid.png?raw=true "BoomiAPM")
 ![Alt text](resources/use-case.png?raw=true "BoomiAPM")
 
 ## List of Actions
@@ -85,7 +85,31 @@ Then, we are the three shapes to the process:
 
 ![Alt text](resources/boomi-process-instrumented.png?raw=true "BoomiAPM")
 
-That's it! Please deploy the connector.
+That's it! You can deploy the process and see Traces and Events.
+
+### Additional configurations
+
+#### Custom tags / metadata
+
+You can add custom tags to the trace using the "Set Property" shape with APM Document:
+
+![Alt text](resources/boomi-process-setprops.png?raw=true "BoomiAPM")
+
+For instance you can add atomId and atomName:
+
+![Alt text](resources/boomi-process-setprops-dialog.png?raw=true "BoomiAPM")
+
+#### Getting exception
+
+In your original Process, if you were using the "Document Property - Base - Try/Catch Message" value in a Shape (Throw, Notify, etc), you can use the "Document Property - APM - Try/Catch Message" to get the same error message.
+
+So in your example,
+
+![Alt text](resources/rethrow-before.png?raw=true "BoomiAPM")
+
+will become:
+
+![Alt text](resources/rethrow-after.png?raw=true "BoomiAPM")
 
 # Overview of Deployments with Observability Stacks
 
