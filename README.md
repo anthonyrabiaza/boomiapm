@@ -116,8 +116,12 @@ will become:
 ## Overview of Deployment with AppDynamics
 ![Alt text](resources/appdynamics.png?raw=true "BoomiAPM")
 
+More details of the configuration of AppDynamics here [here](https://blog.antsoftware.org/boomi-observability-appdynamics/)
+
 ## Overview of Deployment with Datadog 
 ![Alt text](resources/datadog.png?raw=true "BoomiAPM")
+
+More details of the configuration of Datadog here [here](https://blog.antsoftware.org/boomi-observability-intro-datadog/)
 
 ## Overview of Deployment with ElasticAPM
 ![Alt text](resources/elasticapm.png?raw=true "BoomiAPM")
