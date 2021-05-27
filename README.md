@@ -125,3 +125,5 @@ More details of the configuration of Datadog here [here](https://blog.antsoftwar
 
 ## Overview of Deployment with ElasticAPM
 ![Alt text](resources/elasticapm.png?raw=true "BoomiAPM")
+
+More details of the configuration of Elastic here [here](https://blog.antsoftware.org/boomi-observability-elastic/)
