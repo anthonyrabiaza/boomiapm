@@ -19,7 +19,7 @@ public class TracerFactory {
                 break;
             case "elasticapm":
             case "opentracing_resolver":
-                s_tracer = new OpenTracerResolver();
+                s_tracer = new OpenTracingResolver();
                 break;
             case "lightstep":
             case "opentelemetry":
@@ -27,6 +27,9 @@ public class TracerFactory {
                 break;
             case "newrelic":
                 s_tracer = new NewRelicTracer();
+                break;
+            case "wavefront":
+                s_tracer = new WavefrontTracer();
                 break;
         }
 

@@ -21,14 +21,14 @@ public class OpenTracingTracer extends Tracer {
         try {
             logger.info("Looking for OpenTracing trace ...");
             Span span = getSpan();
-            if(!isValid(span)) {
+            RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
+            if(!isValid(span) || !realTimeProcessing.equals(RealTimeProcessing.ignore)) {//FIXME: check again
                 logger.info("Trace not found...");
                 io.opentracing.Tracer tracer = getTracer(logger);
-                if(rtProcess==null || "".equals(rtProcess)) {
+                if(realTimeProcessing.equals(RealTimeProcessing.ignore)) {
                     logger.info("Creating OpenTracing trace ...");
                     span = tracer.buildSpan(context.getProcessName()).withTag("service", context.getServiceName()).start();
                 } else {
-                    RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
                     if(RealTimeProcessing.w3c.equals(realTimeProcessing)) {
                         logger.info("Continuing transaction using w3c header ...");
                         String traceparent = getTraceparent(properties);
@@ -44,7 +44,8 @@ public class OpenTracingTracer extends Tracer {
                                     break;
                             }
                             Map<String, String> map = new HashMap<String, String>();
-                            map.put(TRACEPARENT, traceparent);
+                            map.put(this.getTraceparentKey(), traceparent);
+                            enrich(map, properties);
                             TextMapAdapter textMapAdapter = new TextMapAdapter(map);
                             SpanContext spanContext = tracer.extract(format, textMapAdapter);
                             io.opentracing.Tracer.SpanBuilder spanBuilder;
@@ -64,6 +65,7 @@ public class OpenTracingTracer extends Tracer {
                 logger.info("Trace found, setting tags ...");
             }
             setTraceId(logger, span.context().toTraceId(), metadata);
+            setParentId(logger, span.context().toSpanId(), metadata);
             span.setOperationName(context.getProcessName());
             span.setTag(BOOMI_EXECUTION_ID, context.getExecutionId());
             span.setTag(BOOMI_PROCESS_NAME, context.getProcessName());
@@ -75,6 +77,13 @@ public class OpenTracingTracer extends Tracer {
         super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
+    protected String getTraceparentKey() {
+        return TRACEPARENT;
+    }
+
+    protected void enrich(Map<String, String> map, Map<String, String> properties) {
+    }
+
     @Override
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
@@ -82,6 +91,7 @@ public class OpenTracingTracer extends Tracer {
             Span span = getSpan();
             if(isValid(span)) {
                 setTraceId(logger, span.context().toTraceId(), metadata);
+                setParentId(logger, span.context().toSpanId(), metadata);
                 span.finish();
                 logger.info("OpenTracing trace closed");
             } else {
@@ -100,6 +110,7 @@ public class OpenTracingTracer extends Tracer {
             Span span = getSpan();
             if(isValid(span)) {
                 setTraceId(logger, span.context().toTraceId(), metadata);
+                setParentId(logger, span.context().toSpanId(), metadata);
                 span.setTag(io.opentracing.tag.Tags.ERROR, true);
                 span.setTag(BOOMI_ERROR_MESSAGE, getErrorMessage());
                 span.finish();

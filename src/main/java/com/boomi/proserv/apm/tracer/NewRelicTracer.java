@@ -28,7 +28,7 @@ public class NewRelicTracer extends Tracer {
                         logger.info("Continuing transaction using newrelic payload");
                         NewRelic.getAgent().getTransaction().acceptDistributedTracePayload(newrelic);
                         addContext(logger, context, metadata);
-                        metadata.setTrackedProperty("tracePayload", newrelic);
+                        setTracePayload(logger, newrelic, metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -76,7 +76,7 @@ public class NewRelicTracer extends Tracer {
                     try {
                         logger.info("Continuing transaction using newrelic parentId");
                         NewRelic.addCustomParameter("parentId", parentID);
-                        metadata.setTrackedProperty("parentID", parentID);
+                        setParentId(logger, parentID, metadata);
                         addContext(logger, context, metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
@@ -104,11 +104,11 @@ public class NewRelicTracer extends Tracer {
             case payload:
                 String newrelic = NewRelic.getAgent().getTransaction().createDistributedTracePayload().text();
                 if(!"".equals(newrelic)){
-                    metadata.setTrackedProperty("tracePayload", Base64.getEncoder().encodeToString(newrelic.getBytes()));
+                    setTracePayload(logger, Base64.getEncoder().encodeToString(newrelic.getBytes()), metadata);
                 }
                 break;
             case parentid:
-                metadata.setTrackedProperty("traceID", NewRelic.getAgent().getTraceMetadata().getTraceId());
+                setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
                 break;
             default:
                 break;
@@ -125,11 +125,11 @@ public class NewRelicTracer extends Tracer {
             case payload:
                 String newrelic = NewRelic.getAgent().getTransaction().createDistributedTracePayload().text();
                 if(!"".equals(newrelic)){
-                    metadata.setTrackedProperty("tracePayload", Base64.getEncoder().encodeToString(newrelic.getBytes()));
+                    setTracePayload(logger, Base64.getEncoder().encodeToString(newrelic.getBytes()), metadata);
                 }
                 break;
             case parentid:
-                metadata.setTrackedProperty("traceID", NewRelic.getAgent().getTraceMetadata().getTraceId());
+                setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
                 break;
             default:
                 break;
