@@ -29,6 +29,9 @@
         <allowedValue label="OpenTracing (Resolver)">
             <value>opentracing_resolver</value>
         </allowedValue>
+        <allowedValue label="Wavefront">
+            <value>wavefront</value>
+        </allowedValue>
         <allowedValue label="Disabled">
             <value>disabled</value>
         </allowedValue>
