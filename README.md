@@ -32,6 +32,7 @@ The Boomi APM Connector will enable Boomi Runtime for Observability:
 | OpenTelemetry        | Yes       | No     | No      |
 | OpenTracing          | Yes       | No     | No      |
 | OpenTracing Resolver | Yes       | No     | No      |
+| VMWare Wavefront     | Yes       | No     | No      |
 
 **No: Not implemented yet or Not available*
 
