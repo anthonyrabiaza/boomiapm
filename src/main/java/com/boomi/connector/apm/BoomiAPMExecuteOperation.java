@@ -69,7 +69,12 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 
 		BoomiContext boomiContext 	= new BoomiContext(serviceName, executionID, processName, processID, accountID);
 		PayloadMetadata metadata 	= response.createMetadata();
-		Tracer tracer 				= TracerFactory.getTracer(platform);
+		Tracer tracer				= null;
+		try {
+			tracer = TracerFactory.getTracer(platform);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "ARA: Error initializing the tracer:", e);
+		}
 
 		int payloadSize				= 1;
 		if (request instanceof Collection) {
@@ -82,7 +87,7 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 				log(logger, log, "ARA: Processing documents ...");
 
 				String message 					= BoomiAPMConnector.inputStreamToString(input.getData());
-				InputStream result  			= input.getData();
+				InputStream result  			= BoomiAPMConnector.stringToInputStream(message);
 				Map<String, String> dynProps	= input.getDynamicProperties();
 				Map<String, String> props 		= input.getUserDefinedProperties();
 

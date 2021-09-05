@@ -1,9 +1,6 @@
 package com.boomi.connector.apm;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.stream.Collectors;
 
 import com.boomi.connector.api.BrowseContext;
@@ -49,4 +46,14 @@ public class BoomiAPMConnector extends BaseConnector {
 			return buffer.lines().collect(Collectors.joining("\n"));
 		}
 	}
+
+    /**
+     * Utility to convert String to InputStream
+     * @param str
+     * @return
+     * @throws IOException
+     */
+    public static InputStream stringToInputStream(String str) throws IOException {
+        return new ByteArrayInputStream(str.getBytes());
+    }
 }

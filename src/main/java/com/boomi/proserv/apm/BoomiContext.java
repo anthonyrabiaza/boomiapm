@@ -4,6 +4,7 @@ public class BoomiContext {
     public String serviceName;
     public String executionId;
     public String processName;
+    private String processNameClean;
     public String processId;
     public String accountId;
 
@@ -41,6 +42,14 @@ public class BoomiContext {
 
     public String getProcessName() {
         return processName;
+    }
+
+    public String getProcessNameAlphanum() {
+        if(processNameClean == null) {
+            processNameClean = processName.replaceAll("[^a-zA-Z0-9]", " ");
+            processNameClean = processNameClean.trim().replaceAll("\\s+", " ");
+        }
+        return processNameClean;
     }
 
     public void setProcessName(String processName) {

@@ -3,6 +3,7 @@ package com.boomi.proserv.apm.tracer;
 import com.appdynamics.agent.api.AppdynamicsAgent;
 import com.appdynamics.agent.api.EntryTypes;
 import com.appdynamics.agent.api.Transaction;
+import com.appdynamics.agent.api.impl.NoOpTransaction;
 import com.appdynamics.apm.appagent.api.DataScope;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
@@ -19,14 +20,13 @@ public class AppDynamicsTracer extends Tracer {
         try {
             logger.info("Adding AppDynamics trace ...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
-            if(transaction == null) {
+            if(transaction == null || transaction instanceof NoOpTransaction) {
                 logger.info("Starting new AppDynamics transaction");
-                transaction = AppdynamicsAgent.startTransaction(context.getProcessName(), null, EntryTypes.POJO, true);
+                transaction = AppdynamicsAgent.startTransaction(context.getProcessNameAlphanum(), null, EntryTypes.POJO, false);
             } else {
                 logger.info("Continuing AppDynamics transaction");
-                AppdynamicsAgent.setCurrentTransactionName(context.getProcessName());
+                AppdynamicsAgent.setCurrentTransactionName(context.getProcessNameAlphanum());
             }
-
 
             Set<DataScope> dataScopes = getAllScopes();
             transaction.collectData(BOOMI_EXECUTION_ID, context.getExecutionId(), dataScopes);
@@ -45,7 +45,7 @@ public class AppDynamicsTracer extends Tracer {
             logger.info("Ending AppDynamics trace ...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
             if(transaction != null) {
-                transaction.endSegment();
+                transaction.end();
             } else {
                 logger.info("AppDynamics trace not found");
             }

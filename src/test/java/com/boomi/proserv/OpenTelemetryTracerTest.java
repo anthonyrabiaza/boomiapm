@@ -1,7 +1,6 @@
 package com.boomi.proserv;
 
 import com.boomi.proserv.apm.BoomiContext;
-import com.boomi.proserv.apm.events.DatadogEventsPublisher;
 import com.boomi.proserv.apm.tracer.Tracer;
 import com.boomi.proserv.apm.tracer.TracerFactory;
 import org.junit.jupiter.api.Test;
