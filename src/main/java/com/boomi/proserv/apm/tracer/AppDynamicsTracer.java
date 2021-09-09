@@ -59,10 +59,13 @@ public class AppDynamicsTracer extends Tracer {
     @Override
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
+            logger.info("Ending AppDynamics trace with error...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
             if(transaction != null) {
                 transaction.collectData(BOOMI_ERROR_MESSAGE, getErrorMessage(), getAllScopes());
+                transaction.end();
             }
+            logger.info("AppDynamics trace ended");
         } catch (Exception e) {
             logger.severe("Error adding tags:" + e.getMessage());
         }

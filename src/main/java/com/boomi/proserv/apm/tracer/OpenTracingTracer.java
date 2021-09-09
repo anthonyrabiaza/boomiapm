@@ -3,10 +3,10 @@ package com.boomi.proserv.apm.tracer;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 
+import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMap;
 import io.opentracing.propagation.TextMapAdapter;
 import io.opentracing.util.GlobalTracer;
 
@@ -16,56 +16,64 @@ import java.util.logging.Logger;
 
 public class OpenTracingTracer extends Tracer {
 
+    protected static ThreadLocal<Scope> scope = new ThreadLocal<Scope>();
+
     @Override
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Looking for OpenTracing trace ...");
-            Span span = getSpan();
-            RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
-            if(!isValid(span) || !realTimeProcessing.equals(RealTimeProcessing.ignore)) {//FIXME: check again
-                logger.info("Trace not found...");
-                io.opentracing.Tracer tracer = getTracer(logger);
-                if(realTimeProcessing.equals(RealTimeProcessing.ignore)) {
-                    logger.info("Creating OpenTracing trace ...");
-                    span = tracer.buildSpan(context.getProcessName()).withTag("service", context.getServiceName()).start();
-                } else {
-                    if(RealTimeProcessing.w3c.equals(realTimeProcessing)) {
-                        logger.info("Continuing transaction using w3c header ...");
-                        String traceparent = getTraceparent(properties);
-                        if(traceparent!=null && !traceparent.equals("")) {
-                            Format format;
-                            switch (getComponentType()) {
-                                case JMS:
-                                    format = Format.Builtin.TEXT_MAP;
-                                    break;
-                                case HTTP:
-                                default:
-                                    format = Format.Builtin.HTTP_HEADERS;
-                                    break;
-                            }
-                            Map<String, String> map = new HashMap<String, String>();
-                            map.put(this.getTraceparentKey(), traceparent);
-                            enrich(map, properties);
-                            TextMapAdapter textMapAdapter = new TextMapAdapter(map);
-                            SpanContext spanContext = tracer.extract(format, textMapAdapter);
-                            io.opentracing.Tracer.SpanBuilder spanBuilder;
-                            if (spanContext == null) {
-                                spanBuilder = tracer.buildSpan(context.getProcessName());
-                            } else {
-                                spanBuilder = tracer.buildSpan(context.getProcessName()).asChildOf(spanContext);
-                            }
-                            span = spanBuilder.start();
-                        } else {
-                            logger.warning("w3c header not found");
-                        }
+            Span span                               = getSpan();
+            RealTimeProcessing realTimeProcessing   = RealTimeProcessing.getValue(rtProcess);
+            io.opentracing.Tracer tracer            = getOpenTracingTracer(logger);
+
+            if(RealTimeProcessing.w3c.equals(realTimeProcessing)) {
+                logger.info("Continuing transaction using w3c header ...");
+                String traceparent = getTraceparent(properties);
+                if(traceparent!=null && !traceparent.equals("")) {
+                    Format format;
+                    switch (getComponentType()) {
+                        case JMS:
+                            format = Format.Builtin.TEXT_MAP;
+                            break;
+                        case HTTP:
+                        default:
+                            format = Format.Builtin.HTTP_HEADERS;
+                            break;
                     }
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put(this.getTraceparentKey(), traceparent);
+                    enrich(map, properties);
+                    TextMapAdapter textMapAdapter = new TextMapAdapter(map);
+                    SpanContext spanContext = tracer.extract(format, textMapAdapter);
+                    io.opentracing.Tracer.SpanBuilder spanBuilder;
+                    if (spanContext == null) {
+                        spanBuilder = tracer.buildSpan(context.getProcessName());
+                    } else {
+                        spanBuilder = tracer.buildSpan(context.getProcessName()).asChildOf(spanContext);
+                    }
+                    span = spanBuilder.start();
+                    tracer.activateSpan(span);
+                } else {
+                    logger.warning("w3c header not found");
                 }
-                tracer.activateSpan(span);
+            } else if(realTimeProcessing.equals(RealTimeProcessing.ignore) || !isValid(span)) {
+                if(buildNewSpanWhenIgnoreTag() || !isValid(span)) {
+                    logger.info("Trace not found/ignored. Creating OpenTracing trace ...");
+                    span = tracer.buildSpan(context.getProcessName()).ignoreActiveSpan().withTag("service", context.getServiceName()).start();
+                    tracer.activateSpan(span);
+                } else {
+                    logger.info("Trace found/reused, setting tags ...");
+                }
             } else {
                 logger.info("Trace found, setting tags ...");
             }
-            setTraceId(logger, span.context().toTraceId(), metadata);
-            setParentId(logger, span.context().toSpanId(), metadata);
+            SpanContext spanContext = span.context();
+            if(spanContext != null) {
+                setTraceId (logger, spanContext.toTraceId(), metadata);
+                setParentId(logger, spanContext.toSpanId(), metadata);
+            } else {
+                logger.warning("OpenTracing SpanContext is null");
+            }
             span.setOperationName(context.getProcessName());
             span.setTag(BOOMI_EXECUTION_ID, context.getExecutionId());
             span.setTag(BOOMI_PROCESS_NAME, context.getProcessName());
@@ -81,6 +89,10 @@ public class OpenTracingTracer extends Tracer {
         return TRACEPARENT;
     }
 
+    protected boolean buildNewSpanWhenIgnoreTag() {
+        return true;
+    }
+
     protected void enrich(Map<String, String> map, Map<String, String> properties) {
     }
 
@@ -90,9 +102,15 @@ public class OpenTracingTracer extends Tracer {
             logger.info("Closing OpenTracing trace ...");
             Span span = getSpan();
             if(isValid(span)) {
-                setTraceId(logger, span.context().toTraceId(), metadata);
-                setParentId(logger, span.context().toSpanId(), metadata);
+                SpanContext spanContext = span.context();
+                if(spanContext != null) {
+                    setTraceId (logger, spanContext.toTraceId(), metadata);
+                    setParentId(logger, spanContext.toSpanId(), metadata);
+                } else {
+                    logger.warning("OpenTracing SpanContext is null");
+                }
                 span.finish();
+                //closeScope();
                 logger.info("OpenTracing trace closed");
             } else {
                 logger.severe("OpenTracing trace not found");
@@ -109,11 +127,17 @@ public class OpenTracingTracer extends Tracer {
             logger.info("Closing OpenTracing trace ...");
             Span span = getSpan();
             if(isValid(span)) {
-                setTraceId(logger, span.context().toTraceId(), metadata);
-                setParentId(logger, span.context().toSpanId(), metadata);
+                SpanContext spanContext = span.context();
+                if(spanContext != null) {
+                    setTraceId (logger, spanContext.toTraceId(), metadata);
+                    setParentId(logger, spanContext.toSpanId(), metadata);
+                } else {
+                    logger.warning("OpenTracing SpanContext is null");
+                }
                 span.setTag(io.opentracing.tag.Tags.ERROR, true);
                 span.setTag(BOOMI_ERROR_MESSAGE, getErrorMessage());
                 span.finish();
+                //closeScope();
                 logger.info("OpenTracing trace closed with Error");
             } else {
                 logger.severe("OpenTracing trace not found");
@@ -122,6 +146,14 @@ public class OpenTracingTracer extends Tracer {
             logger.severe("OpenTracing trace not closed " + e);
         }
         super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
+    }
+
+    /**
+     * Forcing the current Scope to close
+     */
+    protected void closeScope() {
+        Scope realScope = scope.get();
+        realScope.close();
     }
 
     @Override
@@ -139,7 +171,7 @@ public class OpenTracingTracer extends Tracer {
         return GlobalTracer.get().activeSpan();
     }
 
-    protected io.opentracing.Tracer getTracer(Logger logger) {
+    protected io.opentracing.Tracer getOpenTracingTracer(Logger logger) {
         logger.info("Getting OpenTracing tracer ...");
         return GlobalTracer.get();
     }

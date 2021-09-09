@@ -2,30 +2,22 @@ package com.boomi.proserv.apm.tracer;
 
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
+import com.boomi.proserv.apm.ComponentType;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpPrincipal;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
-import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
-import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapGetter;
-import io.opentelemetry.exporter.logging.LoggingSpanExporter;
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
-import io.opentelemetry.sdk.autoconfigure.OpenTelemetrySdkAutoConfiguration;
-import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,32 +29,46 @@ import java.util.logging.Logger;
 
 public class OpenTelemetryTracer extends Tracer {
 
+    /*https://www.skypack.dev/view/@opentelemetry/propagator-ot-trace*/
+    public static final String OT_TRACER_TRACEID    = "ot-tracer-traceid";
+    public static final String OT_TRACER_SPANID     = "ot-tracer-spanid";
+
+    protected enum OpenTelemetryTraceType {
+        none,
+        traceparent,
+        ottracer,
+        b3propagation
+    }
+
+    private static OpenTelemetryTraceType openTelemetryTraceType;
+
+    public OpenTelemetryTraceType getOpenTelemetryTraceType() {
+        return openTelemetryTraceType;
+    }
+
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Looking for OpenTelemetry trace ...");
-            OpenTelemetry openTelemetry;
+            Span span                                   = getSpan();
+            RealTimeProcessing realTimeProcessing       = RealTimeProcessing.getValue(rtProcess);
+            OpenTelemetry openTelemetry                 = getOpenTelemetry(logger, realTimeProcessing);
+            io.opentelemetry.api.trace.Tracer tracer    = openTelemetry.getTracer(context.getServiceName(), context.getServiceVersion());
 
-            Span span = Span.current();
-            RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
-
-            try {
-                logger.info("Using GlobalOpenTelemetry ...");
-                openTelemetry = GlobalOpenTelemetry.get();
-            } catch (Exception e ){
-                logger.severe("Unable to use GlobalOpenTelemetry " + e);
-                openTelemetry = OpenTelemetry.noop();
-            }
-
-            io.opentelemetry.api.trace.Tracer tracer = openTelemetry.getTracer(s_serviceName, s_serviceVersion);
             if (RealTimeProcessing.w3c.equals(realTimeProcessing) && getTraceparent(properties) != null) {
-                logger.info("Continuing transaction using w3c header ...");
-                Context extractedContext    = openTelemetry.getPropagators().getTextMapPropagator().extract(Context.current(), getExchange(this, properties), getGetter());
+                logger.info("Continuing transaction using w3c header (" + getOpenTelemetryTraceType().name() + ") ...");
+                Context extractedContext    = openTelemetry.getPropagators().getTextMapPropagator().extract(Context.current(), getExchange(this, logger, properties), getGetter());
                 Scope scope                 = extractedContext.makeCurrent();
                 span                        = tracer.spanBuilder(context.getProcessName()).setParent(extractedContext).setSpanKind(SpanKind.SERVER).startSpan();
-            } else if(span==null || !span.getSpanContext().isValid()) {
-                logger.info("Trace not found...");
-                logger.info("Creating OpenTelemetry trace ...");
-                span = tracer.spanBuilder(context.getProcessName()).setSpanKind(SpanKind.SERVER).startSpan();
+            } else if(RealTimeProcessing.ignore.equals(realTimeProcessing) || !isValid(span)) {
+                logger.info("Trace not found/ignored. Creating OpenTelemetry trace ...");
+                if(span!=null) {
+                    try {
+                        span.end();//FIXME: do I need this?
+                    } catch (Exception e) {
+                        logger.warning("Not able to end span, continuing ... " + e);
+                    }
+                }
+                span = tracer.spanBuilder(context.getProcessName()).setNoParent().setSpanKind(SpanKind.SERVER).startSpan();
                 span.makeCurrent();
             } else {
                 logger.info("Trace found, setting tags ...");
@@ -78,14 +84,23 @@ public class OpenTelemetryTracer extends Tracer {
         super.start(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
+    private Span getSpan() {
+        return Span.current();
+    }
+
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTelemetry trace ...");
-            Span span = Span.current();
+            Span span = getSpan();
+            RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
+
             if(span!=null && span.getSpanContext().isValid()) {
                 setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
                 span.end();
                 logger.info("OpenTelemetry trace closed");
+                if(RealTimeProcessing.ignore.equals(realTimeProcessing)){
+                    //Do we need to force the parentSpan to close?
+                }
             } else {
                 logger.severe("OpenTelemetry trace not found");
             }
@@ -94,10 +109,11 @@ public class OpenTelemetryTracer extends Tracer {
         }
         super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
+
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Closing OpenTelemetry trace ...");
-            Span span = Span.current();
+            Span span = getSpan();
             if(span!=null && span.getSpanContext().isValid()) {
                 setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
                 span.setStatus(StatusCode.ERROR, getErrorMessage());
@@ -112,6 +128,24 @@ public class OpenTelemetryTracer extends Tracer {
         super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
+    protected OpenTelemetry getOpenTelemetry(Logger logger, RealTimeProcessing realTimeProcessing) {
+        OpenTelemetry openTelemetry = null;
+
+        try {
+            logger.info("Using GlobalOpenTelemetry ...");
+            openTelemetry = GlobalOpenTelemetry.get();
+        } catch (Exception e){
+            logger.severe("Unable to use GlobalOpenTelemetry. Defaulting to OpenTelemetry noop  " + e);
+            openTelemetry = OpenTelemetry.noop();
+        }
+
+        return openTelemetry;
+    }
+
+    protected boolean isValid(Span span) {
+        return span != null && span.getSpanContext().isValid();
+    }
+
     @Override
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
@@ -123,6 +157,47 @@ public class OpenTelemetryTracer extends Tracer {
                 }
             }
         }
+    }
+
+    protected String getOTTracePropagatorTraceId(Map<String, String> properties) {
+        String traceId = properties.get(HTTP_DOC_PREFIX + OT_TRACER_TRACEID);
+        setComponentType(ComponentType.HTTP);
+        if(traceId == null || "".equals(traceId)) {
+            traceId = properties.get(OT_TRACER_TRACEID);
+            setComponentType(ComponentType.JMS);
+        }
+        return traceId;
+    }
+
+    protected String getOTTracePropagatorSpanId(Map<String, String> properties) {
+        String spanId = properties.get(HTTP_DOC_PREFIX + OT_TRACER_SPANID);
+        if(spanId == null || "".equals(spanId)) {
+            spanId = properties.get(OT_TRACER_SPANID);
+        }
+        if(spanId == null || "".equals(spanId)) {
+            spanId = getB3SpanId(properties);
+        }
+
+        return spanId;
+    }
+
+    @Override
+    protected String getTraceparent(Map<String, String> properties){
+        String traceparent = super.getTraceparent(properties);
+        openTelemetryTraceType = OpenTelemetryTraceType.traceparent;
+        if(traceparent==null || "".equals(traceparent)) {
+            traceparent = getOTTracePropagatorTraceId(properties);
+            openTelemetryTraceType = OpenTelemetryTraceType.ottracer;
+        }
+        if(traceparent==null || "".equals(traceparent)) {
+            traceparent = getB3TraceId(properties);
+            openTelemetryTraceType = OpenTelemetryTraceType.b3propagation;
+        }
+        if(traceparent==null || "".equals(traceparent)) {
+            openTelemetryTraceType = OpenTelemetryTraceType.none;
+        }
+
+        return traceparent;
     }
 
     protected static TextMapGetter getGetter(){
@@ -144,13 +219,19 @@ public class OpenTelemetryTracer extends Tracer {
         return getter;
     }
 
-    protected static HttpExchange getExchange(Tracer tracer, Map<String, String> properties) {
+    protected static HttpExchange getExchange(OpenTelemetryTracer tracer, Logger logger, Map<String, String> properties) {
         return new HttpExchange() {
             @Override
             public Headers getRequestHeaders() {
                 Headers headers = new Headers();
                 String traceparent = tracer.getTraceparent(properties);
-                headers.add(tracer.TRACEPARENT, traceparent);
+                if((tracer.getOpenTelemetryTraceType() == OpenTelemetryTraceType.b3propagation || tracer.getOpenTelemetryTraceType() == OpenTelemetryTraceType.ottracer) && traceparent.length()==16) {
+                    String spanId = tracer.getOTTracePropagatorSpanId(properties);
+                    headers.add("X-B3-TraceId", traceparent);
+                    headers.add("X-B3-SpanId", spanId);
+                } else {
+                    headers.add(tracer.TRACEPARENT, traceparent);
+                }
                 return headers;
             }
             @Override

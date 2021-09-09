@@ -36,7 +36,13 @@ public class BoomiAPMUpdateOperation extends BaseUpdateOperation {
                 String type     = Observer.getFirstNodeTextContent(doc, "//publish_metrics/type");
                 String value    = Observer.getFirstNodeTextContent(doc, "//publish_metrics/value");
 
-                MetricsPublisher publisher = MetricsPublisherFactory.getMetricsPublisher(platform);
+                MetricsPublisher publisher = null;
+                try {
+                    publisher = MetricsPublisherFactory.getMetricsPublisher(platform);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "ARA: Error initializing the Metrics Publisher:", e);
+                }
+
                 if(publisher != null) {
                     publisher.sendMetrics(logger, null, apiURL, apiKey, appKey, metric, type, value);
                 } else {

@@ -10,6 +10,9 @@ public class MetricsPublisherFactory {
         }
 
         switch(platform) {
+            case "appdynamics":
+                s_metricsPublisher = new AppDynamicsMetricsPublisher();
+                break;
             case "datadog":
                 s_metricsPublisher = new DatadogMetricsPublisher();
                 break;

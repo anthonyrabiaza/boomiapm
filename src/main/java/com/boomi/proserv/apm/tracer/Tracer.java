@@ -17,7 +17,7 @@ public abstract class Tracer {
 
     public static final String HTTP_DOC_PREFIX      = "inheader_";
 
-    //w3c
+    /*w3c*/
     public static final String TRACEPARENT          = "traceparent";
     public static final String TRACESTATE           = "tracestate";
 
@@ -31,25 +31,38 @@ public abstract class Tracer {
     public static final String B3_TRACEID           = "x-b3-traceid";
     public static final String B3_SPANID            = "x-b3-spanid";
 
-    //APM Connector Tracked Property
+    /*APM Connector Tracked Property*/
     public static final String TRACEID              = "traceID";
     public static final String PARENTID             = "parentID";
     public static final String TRACEPAYLOAD         = "tracePayload";
 
-    protected static String s_serviceName;
-    protected static String s_serviceVersion;
+    /*protected static String s_serviceName;
+    protected static String s_serviceVersion;*/
 
-    protected ComponentType componentType = ComponentType.HTTP;
+    /*Local variables*/
+    private String platform;
+    private ComponentType componentType;
+    private String traceId;
+    private String parentId;
+    private String spanId;
+    private String errorMessage;
+    /*End Local variables*/
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
 
     public ComponentType getComponentType(){
         return componentType;
     }
 
-    private String traceId;
-
-    private String parentId;
-
-    private String errorMessage;
+    public void setComponentType(ComponentType componentType){
+        this.componentType = componentType;
+    }
 
     public String getTraceId() {
         return traceId;
@@ -60,7 +73,7 @@ public abstract class Tracer {
     }
 
     public void setTraceId(Logger logger, String traceId, PayloadMetadata metadata) {
-        this.traceId = traceId;
+        setTraceId(traceId);
         if(metadata!=null) {
             logger.info(TRACEID + ":" + traceId);
             metadata.setTrackedProperty(TRACEID, traceId);
@@ -71,12 +84,24 @@ public abstract class Tracer {
         return parentId;
     }
 
-    public void setParentId(Logger logger, String parentId, PayloadMetadata metadata) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public void setParentId(Logger logger, String parentId, PayloadMetadata metadata) {
+        setParentId(parentId);
         if(metadata!=null) {
-            logger.info(PARENTID + ":" + traceId);
+            logger.info(PARENTID + ":" + getTraceId());
             metadata.setTrackedProperty(PARENTID, parentId);
         }
+    }
+
+    public String getSpanId() {
+        return spanId;
+    }
+
+    public void setSpanId(String traceId) {
+        this.spanId = traceId;
     }
 
     public void setTracePayload(Logger logger, String tracePayload, PayloadMetadata metadata) {
@@ -120,28 +145,30 @@ public abstract class Tracer {
 
     protected String getTraceparent(Map<String, String> properties){
         String traceparent = properties.get(HTTP_DOC_PREFIX + TRACEPARENT);//HTTP
+        setComponentType(ComponentType.HTTP);
         if (traceparent == null || traceparent.equals("")) {
             traceparent = properties.get(TRACEPARENT);//JMS
-            componentType = ComponentType.JMS;
+            setComponentType(ComponentType.JMS);
         }
         return traceparent;
     }
 
     protected String getTracestate(Map<String, String> properties) {
         String tracestate = properties.get(HTTP_DOC_PREFIX + TRACESTATE);//HTTP
+        setComponentType(ComponentType.HTTP);
         if (tracestate == null || tracestate.equals("")) {
             tracestate = properties.get(TRACESTATE);//JMS
-            componentType = ComponentType.JMS;
+            setComponentType(ComponentType.JMS);
         }
         return tracestate;
     }
 
     protected String getB3TraceId(Map<String, String> properties) {
         String traceId = properties.get(HTTP_DOC_PREFIX + B3_TRACEID);
-        componentType = ComponentType.HTTP;
+        setComponentType(ComponentType.HTTP);
         if(traceId == null || "".equals(traceId)) {
             traceId = properties.get(B3_TRACEID);
-            componentType = ComponentType.JMS;
+            setComponentType(ComponentType.JMS);
         }
         return traceId;
     }

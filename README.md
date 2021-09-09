@@ -24,7 +24,7 @@ The Boomi APM Connector will enable Boomi Runtime for Observability:
 
 | Platform Name        | Trace     | Events | Metrics |
 | -------------------- | --------- | ------ | ------- |
-| AppDynamics          | Yes       | Yes    | No      |
+| AppDynamics          | Yes       | Yes    | Yes     |
 | Datadog              | Yes       | Yes    | Yes     |
 | ElasticAPM           | Yes       | No     | No      |
 | LightStep            | Yes       | No     | No      |
@@ -119,8 +119,21 @@ will become:
 
 More details of the configuration of AppDynamics here [here](https://blog.antsoftware.org/boomi-observability-appdynamics/)
 
+### Metrics Types
+The following Metrics are supported for AppDynamics:
+- average 
+- sum
+- observed
+
 ## Overview of Deployment with Datadog 
 ![Alt text](resources/datadog.png?raw=true "BoomiAPM")
+
+### Metrics Types
+The following Metrics type are supported for Datadog:
+- count
+- rate
+- gauge
+- distribution
 
 More details of the configuration of Datadog here [here](https://blog.antsoftware.org/boomi-observability-intro-datadog/)
 

@@ -24,6 +24,10 @@ public class BoomiContext {
         this.serviceName = serviceName;
     }
 
+    public String getServiceVersion() {
+        return "1.0";
+    }
+
     public String getExecutionId() {
         return executionId;
     }
