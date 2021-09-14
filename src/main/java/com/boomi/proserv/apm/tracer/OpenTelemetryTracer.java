@@ -60,16 +60,13 @@ public class OpenTelemetryTracer extends Tracer {
                 Scope scope                 = extractedContext.makeCurrent();
                 span                        = tracer.spanBuilder(context.getProcessName()).setParent(extractedContext).setSpanKind(SpanKind.SERVER).startSpan();
             } else if(RealTimeProcessing.ignore.equals(realTimeProcessing) || !isValid(span)) {
-                logger.info("Trace not found/ignored. Creating OpenTelemetry trace ...");
-                if(span!=null) {
-                    try {
-                        span.end();//FIXME: do I need this?
-                    } catch (Exception e) {
-                        logger.warning("Not able to end span, continuing ... " + e);
-                    }
+                if(buildNewSpanWhenIgnoreTag() || !isValid(span)) {
+                    logger.info("Trace not found/ignored. Creating OpenTelemetry trace ...");
+                    span = tracer.spanBuilder(context.getProcessName()).setNoParent().setSpanKind(SpanKind.SERVER).startSpan();
+                    span.makeCurrent();
+                } else {
+                    logger.info("Trace found/reused, setting tags ...");
                 }
-                span = tracer.spanBuilder(context.getProcessName()).setNoParent().setSpanKind(SpanKind.SERVER).startSpan();
-                span.makeCurrent();
             } else {
                 logger.info("Trace found, setting tags ...");
             }
@@ -86,6 +83,15 @@ public class OpenTelemetryTracer extends Tracer {
 
     private Span getSpan() {
         return Span.current();
+    }
+
+    protected boolean buildNewSpanWhenIgnoreTag() {
+        String buildnewspanwhenignoretag = System.getProperty("boomiapm.buildnewspanwhenignoretag");
+        if(buildnewspanwhenignoretag != null && !"".equals(buildnewspanwhenignoretag)) {
+            return Boolean.getBoolean(buildnewspanwhenignoretag);
+        } else {
+            return true;
+        }
     }
 
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {

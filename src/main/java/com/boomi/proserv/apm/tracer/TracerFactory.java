@@ -12,6 +12,9 @@ public class TracerFactory {
             case "datadog":
                 tracer = new DatadogTracer();
                 break;
+            case "dynatrace":
+                tracer = new DynatraceTracer();
+                break;
             case "opentracing":
                 tracer = new OpenTracingTracer();
                 break;

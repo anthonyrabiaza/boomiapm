@@ -124,7 +124,7 @@ public class OpenTracingTracer extends Tracer {
     @Override
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
-            logger.info("Closing OpenTracing trace ...");
+            logger.info("Closing OpenTracing trace with Error...");
             Span span = getSpan();
             if(isValid(span)) {
                 SpanContext spanContext = span.context();

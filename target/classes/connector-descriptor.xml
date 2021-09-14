@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenericConnectorDescriptor>
-    <description>Boomi Data Security Processor</description>
+    <description>Boomi APM Connector</description>
 
     <field id="platform" label="APM Platform" type="string">
         <helpText>Tracing Platform</helpText>
@@ -10,6 +10,9 @@
         </allowedValue>
         <allowedValue label="Datadog">
             <value>datadog</value>
+        </allowedValue>
+        <allowedValue label="Dynatrace">
+            <value>dynatrace</value>
         </allowedValue>
         <allowedValue label="ElasticAPM">
             <value>elasticapm</value>

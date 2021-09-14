@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>1.34</version>
+    <version>1.39</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -79,14 +79,21 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <artifactId>common-sdk</artifactId>
             <version>1.1.9</version>
         </dependency>
-        <!--NewRelic-->
+        <!--AppDynamics-->
         <dependency>
-            <groupId>com.newrelic.agent.java</groupId>
-            <artifactId>newrelic-api</artifactId>
-            <version>6.4.2</version>
+            <groupId>com.appdynamics.agent</groupId>
+            <artifactId>agent-api</artifactId>
+            <version>20.6.0.30246</version>
             <scope>provided</scope>
         </dependency>
-        <!--End NewRelic-->
+        <dependency>
+            <groupId>com.appdynamics.agent</groupId>
+            <artifactId>agent</artifactId>
+            <version>21.2.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/Documents/dev/lib/appdynamics/21.2.0/javaagent.jar</systemPath>
+        </dependency>
+        <!--End AppDynamics-->
         <!--Datadog-->
         <dependency>
             <groupId>com.datadoghq</groupId>
@@ -95,6 +102,33 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <scope>provided</scope>
         </dependency>
         <!--End Datadog-->
+        <!--Dynatrace-->
+        <dependency>
+            <groupId>com.dynatrace.oneagent.sdk.java</groupId>
+            <artifactId>oneagent-sdk</artifactId>
+            <version>1.8.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--End Dynatrace-->
+        <!--ElasticAPM-->
+        <!--
+        To be added via Custom Library, runtime call to the class will be done by ElasticAPMTracer.getTracer()
+        <dependency>
+            <groupId>co.elastic.apm</groupId>
+            <artifactId>apm-opentracing</artifactId>
+            <version>1.22.0</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        <!--End ElasticAPM-->
+        <!--NewRelic-->
+        <dependency>
+            <groupId>com.newrelic.agent.java</groupId>
+            <artifactId>newrelic-api</artifactId>
+            <version>6.4.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--End NewRelic-->
         <!--OpenTracing-->
         <dependency>
             <groupId>io.opentracing</groupId>
@@ -245,32 +279,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <systemPath>/home/ant/Documents/dev/lib/opentelemetry/1.0.0/opentelemetry-javaagent-all.jar</systemPath>
         </dependency>
         -->
-        <!--AppDynamics-->
-        <dependency>
-            <groupId>com.appdynamics.agent</groupId>
-            <artifactId>agent-api</artifactId>
-            <version>20.6.0.30246</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.appdynamics.agent</groupId>
-            <artifactId>agent</artifactId>
-            <version>21.2.0</version>
-            <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/appdynamics/21.2.0/javaagent.jar</systemPath>
-        </dependency>
-        <!--End AppDynamics-->
-        <!--ElasticAPM-->
-        <!--
-        To be added via Custom Library, runtime call to the class will be done by ElasticAPMTracer.getTracer()
-        <dependency>
-            <groupId>co.elastic.apm</groupId>
-            <artifactId>apm-opentracing</artifactId>
-            <version>1.22.0</version>
-            <scope>provided</scope>
-        </dependency>
-        -->
-        <!--End ElasticAPM-->
         <!--JUnit-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

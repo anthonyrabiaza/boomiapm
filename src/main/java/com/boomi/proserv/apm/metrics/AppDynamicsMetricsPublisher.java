@@ -13,7 +13,7 @@ public class AppDynamicsMetricsPublisher extends MetricsPublisher {
         try {
             logger.info("Sending metrics to AppDynamics...");
             MetricPublisher metricPublisher = AppdynamicsAgent.getMetricPublisher();
-            String metricName =  "Server|Component:" + System.getProperty("appdynamics.agent.tierName") +"|Custom Metrics|" + s_prefix + metric;
+            String metricName =  "Server|Component:" + boomiContext.getServiceName() +"|Custom Metrics|" + s_prefix + metric;
             switch(type) {
                 case "average":
                     metricPublisher.reportAverageMetric(metricName, Long.valueOf(value));
