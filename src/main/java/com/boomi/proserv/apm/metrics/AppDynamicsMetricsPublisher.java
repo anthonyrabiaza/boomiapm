@@ -14,6 +14,7 @@ public class AppDynamicsMetricsPublisher extends MetricsPublisher {
             logger.info("Sending metrics to AppDynamics...");
             MetricPublisher metricPublisher = AppdynamicsAgent.getMetricPublisher();
             String metricName =  "Server|Component:" + boomiContext.getServiceName() +"|Custom Metrics|" + s_prefix + metric;
+            logger.info("Pushing AppDynamics metrics of type " + type + " using " + metricName + "...");
             switch(type) {
                 case "average":
                     metricPublisher.reportAverageMetric(metricName, Long.valueOf(value));
@@ -25,7 +26,7 @@ public class AppDynamicsMetricsPublisher extends MetricsPublisher {
                     metricPublisher.reportObservedMetric(metricName, Long.valueOf(value));
                     break;
             }
-
+            logger.info("AppDynamics metrics sent");
         } catch (Exception e) {
             logger.severe("Error when Sending metrics to AppDynamics: " + e.getMessage());
             logger.severe(convertStackTraceToString(e));

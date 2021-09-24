@@ -3,6 +3,8 @@ package com.boomi.connector.apm;
 import com.boomi.connector.api.*;
 import com.boomi.connector.util.BaseUpdateOperation;
 
+import com.boomi.execution.ExecutionManager;
+import com.boomi.proserv.apm.BoomiContext;
 import com.boomi.proserv.apm.Observer;
 import com.boomi.proserv.apm.metrics.MetricsPublisher;
 import com.boomi.proserv.apm.metrics.MetricsPublisherFactory;
@@ -22,10 +24,30 @@ public class BoomiAPMUpdateOperation extends BaseUpdateOperation {
         Logger logger 	= response.getLogger();
         boolean log 	= true;
 
-        String platform = getContext().getConnectionProperties().getProperty("platform");
-        String apiURL 	= getContext().getConnectionProperties().getProperty("metricsAPIURL");
-        String apiKey 	= getContext().getConnectionProperties().getProperty("apiKey");
-        String appKey 	= getContext().getConnectionProperties().getProperty("appKey");
+        String platform     = getContext().getConnectionProperties().getProperty("platform");
+        String apiURL 	    = getContext().getConnectionProperties().getProperty("metricsAPIURL");
+        String apiKey 	    = getContext().getConnectionProperties().getProperty("apiKey");
+        String appKey 	    = getContext().getConnectionProperties().getProperty("appKey");
+
+        String serviceName	= getContext().getConnectionProperties().getProperty("serviceName");
+        String executionID  = "N/A";
+        String processName  = "N/A";
+        String processID    = "N/A";
+        String accountID    = "N/A";
+
+        executionID = ExecutionManager.getCurrent().getTopLevelExecutionId();
+
+        if(ExecutionManager.getCurrent().getParent() != null){
+            processName = ExecutionManager.getCurrent().getParent().getProcessName();
+            processID   = ExecutionManager.getCurrent().getParent().getProcessId();
+        } else {
+            processName = ExecutionManager.getCurrent().getProcessName();
+            processID   = ExecutionManager.getCurrent().getProcessId();
+        }
+
+        accountID		= ExecutionManager.getCurrent().getAccountId();
+
+        BoomiContext boomiContext 	= new BoomiContext(serviceName, executionID, processName, processID, accountID);
 
         for (ObjectData input : request) {
             try {
@@ -44,7 +66,7 @@ public class BoomiAPMUpdateOperation extends BaseUpdateOperation {
                 }
 
                 if(publisher != null) {
-                    publisher.sendMetrics(logger, null, apiURL, apiKey, appKey, metric, type, value);
+                    publisher.sendMetrics(logger, boomiContext, apiURL, apiKey, appKey, metric, type, value);
                 } else {
                     logger.warning("No Metrics Publisher defined");
                 }
