@@ -24,15 +24,16 @@ The Boomi APM Connector will enable Boomi Runtime for Observability:
 
 | Platform Name        | Trace     | Events | Metrics |
 | -------------------- | --------- | ------ | ------- |
-| AppDynamics          | Yes       | Yes    | Yes     |
-| Datadog              | Yes       | Yes    | Yes     |
-| ElasticAPM           | Yes       | No     | No      |
-| LightStep            | Yes       | No     | No      |
-| NewRelic             | Yes       | No     | No      |
-| OpenTelemetry        | Yes       | No     | No      |
-| OpenTracing          | Yes       | No     | No      |
-| OpenTracing Resolver | Yes       | No     | No      |
-| VMWare Wavefront     | Yes       | No     | No      |
+| AppDynamics          | ✅        | ✅      | ✅       |
+| Datadog              | ✅        | ✅      | ✅       |
+| Dynatrace            | ✅        | No     | ✅       |
+| ElasticAPM           | ✅        | No     | No      |
+| LightStep            | ✅        | No     | No      |
+| NewRelic             | ✅        | No     | No      |
+| OpenTelemetry        | ✅        | No     | No      |
+| OpenTracing          | ✅        | No     | No      |
+| OpenTracing Resolver | ✅        | No     | No      |
+| VMWare Wavefront     | ✅        | No     | No      |
 
 **No: Not implemented yet or Not available*
 

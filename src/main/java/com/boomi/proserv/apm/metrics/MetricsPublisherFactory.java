@@ -16,6 +16,9 @@ public class MetricsPublisherFactory {
             case "datadog":
                 s_metricsPublisher = new DatadogMetricsPublisher();
                 break;
+            case "dynatrace":
+                s_metricsPublisher = new DynatraceMetricsPublisher();
+                break;
             default:
                 s_metricsPublisher = null;
                 break;
