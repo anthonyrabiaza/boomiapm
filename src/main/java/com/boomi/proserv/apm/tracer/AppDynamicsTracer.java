@@ -41,6 +41,7 @@ public class AppDynamicsTracer extends Tracer {
 
     @Override
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Ending AppDynamics trace ...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
@@ -53,11 +54,11 @@ public class AppDynamicsTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("AppDynamics trace not added " + e);
         }
-        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     @Override
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Ending AppDynamics trace with error...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
@@ -69,7 +70,6 @@ public class AppDynamicsTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("Error adding tags:" + e.getMessage());
         }
-        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     protected Set<DataScope> getAllScopes() {

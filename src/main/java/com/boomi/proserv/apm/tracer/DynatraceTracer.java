@@ -34,6 +34,7 @@ public class DynatraceTracer extends Tracer {
 
     @Override
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Closing Dynatrace trace ...");
             CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
@@ -41,11 +42,11 @@ public class DynatraceTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("Dynatrace trace not closed:" + e.getMessage());
         }
-        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     @Override
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Closing Dynatrace trace with Error...");
             CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
@@ -53,7 +54,6 @@ public class DynatraceTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("Dynatrace trace not closed:" + e.getMessage());
         }
-        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     @Override

@@ -95,6 +95,7 @@ public class OpenTelemetryTracer extends Tracer {
     }
 
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Closing OpenTelemetry trace ...");
             Span span = getSpan();
@@ -113,10 +114,10 @@ public class OpenTelemetryTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTelemetry trace not closed " + e);
         }
-        super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Closing OpenTelemetry trace ...");
             Span span = getSpan();
@@ -131,7 +132,6 @@ public class OpenTelemetryTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("OpenTelemetry trace not closed " + e);
         }
-        super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
     }
 
     protected OpenTelemetry getOpenTelemetry(Logger logger, RealTimeProcessing realTimeProcessing) {
