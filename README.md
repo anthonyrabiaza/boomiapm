@@ -30,7 +30,7 @@ The Boomi APM Connector will enable Boomi Runtime for Observability:
 | ElasticAPM           | ✅        | No     | No      |
 | LightStep            | ✅        | No     | No      |
 | NewRelic             | ✅        | No     | No      |
-| OpenTelemetry        | ✅        | No     | No      |
+| OpenTelemetry        | ✅        | No     | ✅      |
 | OpenTracing          | ✅        | No     | No      |
 | OpenTracing Resolver | ✅        | No     | No      |
 | VMWare Wavefront     | ✅        | No     | No      |
