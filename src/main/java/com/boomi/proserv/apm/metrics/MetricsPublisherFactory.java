@@ -19,6 +19,9 @@ public class MetricsPublisherFactory {
             case "dynatrace":
                 s_metricsPublisher = new DynatraceMetricsPublisher();
                 break;
+            case "opentelemetry":
+                s_metricsPublisher = new OpenTelemetryMetricsPublisher();
+                break;
             default:
                 s_metricsPublisher = null;
                 break;
