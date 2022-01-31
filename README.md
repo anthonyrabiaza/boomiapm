@@ -133,7 +133,7 @@ The following Metrics are supported for AppDynamics:
 
 ## Overview of Deployment with Datadog 
 <!--![Alt text](resources/datadog.png?raw=true "BoomiAPM")-->
-<img src="./resources/datadog?raw=true" alt="Alt text" width="500px"></img>
+<img src="./resources/datadog.png?raw=true" alt="Alt text" width="500px"></img>
 
 ### Metrics Types
 The following Metrics type are supported for Datadog:
