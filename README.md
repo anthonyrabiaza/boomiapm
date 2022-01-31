@@ -151,4 +151,4 @@ More details of the configuration of New Relic One here [here](https://blog.ants
 ## Overview of Deployment with Grafana Cloud
 ![Alt text](resources/grafanacloud.png?raw=true "BoomiAPM")
 
-More details of the configuration of Grafana Cloud here [here](https://blog.antsoftware.org/boomi-observability-grafana/)
+More details of the configuration of Grafana Cloud here [here](https://blog.antsoftware.org/boomi-observability-grafanacloud/)
