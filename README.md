@@ -141,4 +141,14 @@ More details of the configuration of Datadog here [here](https://blog.antsoftwar
 ## Overview of Deployment with ElasticAPM
 ![Alt text](resources/elasticapm.png?raw=true "BoomiAPM")
 
-More details of the configuration of Elastic here [here](https://blog.antsoftware.org/boomi-observability-elastic/)
+More details of the configuration of Grafana Cloud here [here](https://blog.antsoftware.org/boomi-observability-elastic/)
+
+## Overview of Deployment with New Relic One
+![Alt text](resources/newrelic.png?raw=true "BoomiAPM")
+
+More details of the configuration of New Relic One here [here](https://blog.antsoftware.org/boomi-observability-newrelic/)
+
+## Overview of Deployment with Grafana Cloud
+![Alt text](resources/grafanacloud.png?raw=true "BoomiAPM")
+
+More details of the configuration of Grafana Cloud here [here](https://blog.antsoftware.org/boomi-observability-grafana/)
