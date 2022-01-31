@@ -120,7 +120,8 @@ will become:
 # Overview of Deployments with Observability Stacks
 
 ## Overview of Deployment with AppDynamics
-![Alt text](resources/appdynamics.png?raw=true "BoomiAPM")
+<!--![Alt text](resources/appdynamics.png?raw=true "BoomiAPM")-->
+<img src="./resources/use-case.png?raw=true" alt="Alt text" width="500px"></img>
 
 More details of the configuration of AppDynamics here [here](https://blog.antsoftware.org/boomi-observability-appdynamics/)
 
@@ -131,7 +132,8 @@ The following Metrics are supported for AppDynamics:
 - observed
 
 ## Overview of Deployment with Datadog 
-![Alt text](resources/datadog.png?raw=true "BoomiAPM")
+<!--![Alt text](resources/datadog.png?raw=true "BoomiAPM")-->
+<img src="./resources/datadog?raw=true" alt="Alt text" width="500px"></img>
 
 ### Metrics Types
 The following Metrics type are supported for Datadog:
@@ -143,16 +145,19 @@ The following Metrics type are supported for Datadog:
 More details of the configuration of Datadog here [here](https://blog.antsoftware.org/boomi-observability-intro-datadog/)
 
 ## Overview of Deployment with ElasticAPM
-![Alt text](resources/elasticapm.png?raw=true "BoomiAPM")
+<!--![Alt text](resources/elasticapm.png?raw=true "BoomiAPM")-->
+<img src="./resources/elasticapm.png?raw=true" alt="Alt text" width="500px"></img>
 
 More details of the configuration of Elastic APM here [here](https://blog.antsoftware.org/boomi-observability-elastic/)
 
 ## Overview of Deployment with New Relic One
-![Alt text](resources/newrelic.png?raw=true "BoomiAPM")
+<!--![Alt text](resources/newrelic.png?raw=true "BoomiAPM")-->
+<img src="./resources/newrelic.png?raw=true" alt="Alt text" width="500px"></img>
 
 More details of the configuration of New Relic One here [here](https://blog.antsoftware.org/boomi-observability-newrelic/)
 
 ## Overview of Deployment with Grafana Cloud
-![Alt text](resources/grafanacloud.png?raw=true "BoomiAPM")
+<!--![Alt text](resources/grafanacloud.png?raw=true "BoomiAPM")-->
+<img src="./resources/grafanacloud.png?raw=true" alt="Alt text" width="500px"></img>
 
 More details of the configuration of Grafana Cloud here [here](https://blog.antsoftware.org/boomi-observability-grafanacloud/)
