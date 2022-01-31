@@ -121,7 +121,7 @@ will become:
 
 ## Overview of Deployment with AppDynamics
 <!--![Alt text](resources/appdynamics.png?raw=true "BoomiAPM")-->
-<img src="./resources/use-case.png?raw=true" alt="Alt text" width="500px"></img>
+<img src="./resources/appdynamics.png?raw=true" alt="Alt text" width="500px"></img>
 
 More details of the configuration of AppDynamics here [here](https://blog.antsoftware.org/boomi-observability-appdynamics/)
 
