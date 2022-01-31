@@ -9,7 +9,11 @@ Boomi APM Connector allows:
 The Boomi APM Connector will enable Boomi Runtime for Observability:
 
 ![Alt text](resources/observability-pyramid.png?raw=true "BoomiAPM")
-![Alt text](resources/use-case.png?raw=true "BoomiAPM")
+
+Taking the following Components topology:
+
+<!---![Alt text](resources/use-case.png?raw=true "BoomiAPM"))-->
+<img src="./resources/use-case.png?raw=true" alt="Alt text" width="500px"></img>
 
 ## List of Actions
 
