@@ -17,6 +17,7 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.context.propagation.TextMapGetter;
+import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,9 @@ public class OpenTelemetryTracer extends Tracer {
     /*https://www.skypack.dev/view/@opentelemetry/propagator-ot-trace*/
     public static final String OT_TRACER_TRACEID    = "ot-tracer-traceid";
     public static final String OT_TRACER_SPANID     = "ot-tracer-spanid";
+
+
+    public static final String OT_FAKE_URL_PREFIX   = "https://o11y.boomi-apj.com/process/";
 
     protected enum OpenTelemetryTraceType {
         none,
@@ -67,6 +71,11 @@ public class OpenTelemetryTracer extends Tracer {
                 } else {
                     logger.info("Trace found/reused, setting tags ...");
                 }
+                if(addProcessNameAsURLWhenIgnoreTag()) {
+                    logger.info("Adding fake HTTP attributes ...");
+                    span.setAttribute("http.method", "TRACE");
+                    span.setAttribute("http.url", OT_FAKE_URL_PREFIX + context.getProcessNameAlphanum());
+                }
             } else {
                 logger.info("Trace found, setting tags ...");
             }
@@ -88,9 +97,18 @@ public class OpenTelemetryTracer extends Tracer {
     protected boolean buildNewSpanWhenIgnoreTag() {
         String buildnewspanwhenignoretag = System.getProperty("boomiapm.buildnewspanwhenignoretag");
         if(buildnewspanwhenignoretag != null && !"".equals(buildnewspanwhenignoretag)) {
-            return Boolean.getBoolean(buildnewspanwhenignoretag);
+            return Boolean.parseBoolean(buildnewspanwhenignoretag);
         } else {
             return true;
+        }
+    }
+
+    protected boolean addProcessNameAsURLWhenIgnoreTag() {
+        String addprocessnameasurlwhenignoretag = System.getProperty("boomiapm.addprocessnameasurlwhenignoretag");
+        if(addprocessnameasurlwhenignoretag != null && !"".equals(addprocessnameasurlwhenignoretag)) {
+            return Boolean.parseBoolean(addprocessnameasurlwhenignoretag);
+        } else {
+            return false;
         }
     }
 
