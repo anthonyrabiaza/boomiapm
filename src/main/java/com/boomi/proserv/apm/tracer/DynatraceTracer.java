@@ -22,9 +22,9 @@ public class DynatraceTracer extends Tracer {
             logger.info("Creating Dynatrace trace ...");
             CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
             tracer.start();
-            getAgent(logger).addCustomRequestAttribute(BOOMI_EXECUTION_ID, context.getExecutionId());
-            getAgent(logger).addCustomRequestAttribute(BOOMI_PROCESS_NAME, context.getProcessName());
-            getAgent(logger).addCustomRequestAttribute(BOOMI_PROCESS_ID, context.getProcessId());
+            getAgent(logger).addCustomRequestAttribute(getBoomiExecutionIdKey(), context.getExecutionId());
+            getAgent(logger).addCustomRequestAttribute(getBoomiProcessNameKey(), context.getProcessName());
+            getAgent(logger).addCustomRequestAttribute(getBoomiProcessIdKey(), context.getProcessId());
             logger.info("Dynatrace trace added");
         } catch (Exception e) {
             logger.severe("Error adding creating Dynatrace trace:" + e.getMessage());

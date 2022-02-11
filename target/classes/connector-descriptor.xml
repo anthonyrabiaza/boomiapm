@@ -8,6 +8,9 @@
         <allowedValue label="AppDynamics">
             <value>appdynamics</value>
         </allowedValue>
+        <allowedValue label="AWS X-Ray OpenTelemetry">
+            <value>awsxray_opentelemetry</value>
+        </allowedValue>
         <allowedValue label="Datadog">
             <value>datadog</value>
         </allowedValue>
@@ -110,6 +113,7 @@
 
     <trackedProperty id="tracePayload" label="Trace Payload"/>
     <trackedProperty id="traceID" label="Trace ID"/>
+    <trackedProperty id="traceIDFormatted" label="Trace ID Formatted"/>
     <trackedProperty id="parentID" label="Parent ID"/>
     <trackedProperty id="errorMessage" label="Try/Catch Message"/>
 

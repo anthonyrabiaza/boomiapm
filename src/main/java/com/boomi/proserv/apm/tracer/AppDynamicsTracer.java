@@ -29,9 +29,9 @@ public class AppDynamicsTracer extends Tracer {
             }
 
             Set<DataScope> dataScopes = getAllScopes();
-            transaction.collectData(BOOMI_EXECUTION_ID, context.getExecutionId(), dataScopes);
-            transaction.collectData(BOOMI_PROCESS_NAME, context.getProcessName(), dataScopes);
-            transaction.collectData(BOOMI_PROCESS_ID, context.getProcessId(), dataScopes);
+            transaction.collectData(getBoomiExecutionIdKey(), context.getExecutionId(), dataScopes);
+            transaction.collectData(getBoomiProcessNameKey(), context.getProcessName(), dataScopes);
+            transaction.collectData(getBoomiProcessIdKey(), context.getProcessId(), dataScopes);
             logger.info("AppDynamics trace added");
         } catch (Exception e) {
             logger.severe("AppDynamics trace not added " + e);
@@ -63,7 +63,7 @@ public class AppDynamicsTracer extends Tracer {
             logger.info("Ending AppDynamics trace with error...");
             Transaction transaction = AppdynamicsAgent.getTransaction();
             if(transaction != null) {
-                transaction.collectData(BOOMI_ERROR_MESSAGE, getErrorMessage(), getAllScopes());
+                transaction.collectData(getBoomiErrorMessageKey(), getErrorMessage(), getAllScopes());
                 transaction.end();
             }
             logger.info("AppDynamics trace ended");

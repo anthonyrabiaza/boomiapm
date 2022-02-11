@@ -10,10 +10,11 @@ import java.util.logging.Logger;
 
 public abstract class Tracer {
 
-    public static final String BOOMI_EXECUTION_ID   = "boomi.executionID";
-    public static final String BOOMI_PROCESS_NAME   = "boomi.processName";
-    public static final String BOOMI_PROCESS_ID     = "boomi.processID";
-    public static final String BOOMI_ERROR_MESSAGE  = "boomi.errorMessage";
+    private static final String BOOMI_EXECUTION_ID      = "boomi.executionID";
+    private static final String BOOMI_PROCESS_NAME      = "boomi.processName";
+    private static final String BOOMI_PROCESS_ID        = "boomi.processID";
+    private static final String BOOMI_ERROR_MESSAGE     = "boomi.errorMessage";
+    private static final String BOOMI_ATTRIBUTES_PREFIX = "boomi.";
 
     public static final String HTTP_DOC_PREFIX      = "inheader_";
 
@@ -33,6 +34,7 @@ public abstract class Tracer {
 
     /*APM Connector Tracked Property*/
     public static final String TRACEID              = "traceID";
+    public static final String TRACEIDFORMATTED     = "traceIDFormatted";
     public static final String PARENTID             = "parentID";
     public static final String TRACEPAYLOAD         = "tracePayload";
 
@@ -77,6 +79,7 @@ public abstract class Tracer {
         if(metadata!=null) {
             logger.info(TRACEID + ":" + traceId);
             metadata.setTrackedProperty(TRACEID, traceId);
+            metadata.setTrackedProperty(TRACEIDFORMATTED, formatTraceId(traceId));
         }
     }
 
@@ -143,6 +146,26 @@ public abstract class Tracer {
 
     protected abstract void addTags(Map<String, String> dynProps);
 
+    public String getBoomiExecutionIdKey() {
+        return BOOMI_EXECUTION_ID;
+    }
+
+    public String getBoomiProcessNameKey() {
+        return BOOMI_PROCESS_NAME;
+    }
+
+    public String getBoomiProcessIdKey() {
+        return BOOMI_PROCESS_ID;
+    }
+
+    public String getBoomiErrorMessageKey() {
+        return BOOMI_ERROR_MESSAGE;
+    }
+
+    public String getBoomiAttributesPrefix() {
+        return BOOMI_ATTRIBUTES_PREFIX;
+    }
+
     protected String getTraceparent(Map<String, String> properties){
         String traceparent = properties.get(HTTP_DOC_PREFIX + TRACEPARENT);//HTTP
         setComponentType(ComponentType.HTTP);
@@ -190,7 +213,7 @@ public abstract class Tracer {
                 for (int i = 0; i < kvArray.length; i++) {
                     String kv = kvArray[i];
                     String[] kva = kv.split("=");
-                    kvMap.put("boomi." + kva[0], kva[1]);
+                    kvMap.put(getBoomiAttributesPrefix() + kva[0], kva[1]);
                 }
             }
         }
@@ -207,5 +230,9 @@ public abstract class Tracer {
         } else {
             return "00000000-0000-0000-0000-000000000000";
         }
+    }
+
+    public String formatTraceId(String str) {
+        return str;
     }
 }

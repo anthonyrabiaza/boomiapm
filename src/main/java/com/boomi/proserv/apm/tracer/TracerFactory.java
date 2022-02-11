@@ -9,6 +9,9 @@ public class TracerFactory {
             case "appdynamics":
                 tracer = new AppDynamicsTracer();
                 break;
+            case "awsxray_opentelemetry":
+                tracer = new AWSXRayOpenTelemetryTracer();
+                break;
             case "datadog":
                 tracer = new DatadogTracer();
                 break;

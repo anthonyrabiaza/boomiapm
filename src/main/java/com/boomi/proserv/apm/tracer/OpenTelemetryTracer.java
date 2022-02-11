@@ -80,9 +80,9 @@ public class OpenTelemetryTracer extends Tracer {
                 logger.info("Trace found, setting tags ...");
             }
             setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
-            span.setAttribute(BOOMI_EXECUTION_ID, context.getExecutionId());
-            span.setAttribute(BOOMI_PROCESS_NAME, context.getProcessName());
-            span.setAttribute(BOOMI_PROCESS_ID, context.getProcessId());
+            span.setAttribute(getBoomiExecutionIdKey(), context.getExecutionId());
+            span.setAttribute(getBoomiProcessNameKey(), context.getProcessName());
+            span.setAttribute(getBoomiProcessIdKey(), context.getProcessId());
             logger.info("OpenTelemetry trace added");
         } catch (Exception e) {
             logger.severe("OpenTelemetry trace not added " + e);
@@ -118,7 +118,6 @@ public class OpenTelemetryTracer extends Tracer {
             logger.info("Closing OpenTelemetry trace ...");
             Span span = getSpan();
             RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
-
             if(span!=null && span.getSpanContext().isValid()) {
                 setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
                 span.end();
@@ -174,7 +173,7 @@ public class OpenTelemetryTracer extends Tracer {
     protected void addTags(Map<String, String> dynProps) {
         Map<String, String> tags = getTags(dynProps);
         if(tags.size()>0) {
-            Span span = Span.current();
+            Span span = getSpan();
             if(span!=null && span.getSpanContext().isValid()) {
                 for (Map.Entry<String, String> entry : tags.entrySet()) {
                     span.setAttribute(entry.getKey(), entry.getValue());
