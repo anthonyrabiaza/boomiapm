@@ -27,14 +27,15 @@ Taking the following Components topology:
 ## Observability Platforms supported
 
 | Platform Name        | Trace     | Events | Metrics |
-| -------------------- | --------- | ------ | ------- |
+|----------------------| --------- |--------|---------|
 | AppDynamics          | ✅        | ✅      | ✅       |
+| AWS X-Ray Otel       | ✅        | No     | No      |
 | Datadog              | ✅        | ✅      | ✅       |
 | Dynatrace            | ✅        | No     | ✅       |
 | ElasticAPM           | ✅        | No     | No      |
 | LightStep            | ✅        | No     | No      |
 | NewRelic             | ✅        | No     | No      |
-| OpenTelemetry        | ✅        | No     | ✅      |
+| OpenTelemetry        | ✅        | No     | ✅       |
 | OpenTracing          | ✅        | No     | No      |
 | OpenTracing Resolver | ✅        | No     | No      |
 | VMWare Wavefront     | ✅        | No     | No      |

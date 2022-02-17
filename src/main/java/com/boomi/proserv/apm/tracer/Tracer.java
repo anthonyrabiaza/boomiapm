@@ -146,6 +146,19 @@ public abstract class Tracer {
 
     protected abstract void addTags(Map<String, String> dynProps);
 
+    protected boolean getDefaultValueBuildNewSpanWhenIgnoreTag() {
+        return true;
+    }
+
+    protected boolean buildNewSpanWhenIgnoreTag() {
+        String buildnewspanwhenignoretag = System.getProperty("boomiapm.buildnewspanwhenignoretag");
+        if(buildnewspanwhenignoretag != null && !"".equals(buildnewspanwhenignoretag)) {
+            return Boolean.parseBoolean(buildnewspanwhenignoretag);
+        } else {
+            return getDefaultValueBuildNewSpanWhenIgnoreTag();
+        }
+    }
+
     public String getBoomiExecutionIdKey() {
         return BOOMI_EXECUTION_ID;
     }

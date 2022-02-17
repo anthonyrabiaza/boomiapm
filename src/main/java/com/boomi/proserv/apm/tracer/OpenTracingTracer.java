@@ -89,7 +89,7 @@ public class OpenTracingTracer extends Tracer {
         return TRACEPARENT;
     }
 
-    protected boolean buildNewSpanWhenIgnoreTag() {
+    protected boolean getDefaultValueBuildNewSpanWhenIgnoreTag() {
         return true;
     }
 

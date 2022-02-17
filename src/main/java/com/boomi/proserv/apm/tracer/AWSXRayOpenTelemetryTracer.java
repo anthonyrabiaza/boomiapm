@@ -48,4 +48,9 @@ public class AWSXRayOpenTelemetryTracer extends OpenTelemetryTracer {
     public String getBoomiAttributesPrefix() {
         return BOOMI_ATTRIBUTES_PREFIX;
     }
+
+    @Override
+    protected boolean getDefaultValueAddProcessNameAsURLWhenIgnoreTag() {
+        return true;
+    }
 }

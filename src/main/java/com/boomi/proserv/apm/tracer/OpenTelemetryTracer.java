@@ -17,7 +17,6 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.context.propagation.TextMapGetter;
-import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,13 +93,9 @@ public class OpenTelemetryTracer extends Tracer {
         return Span.current();
     }
 
-    protected boolean buildNewSpanWhenIgnoreTag() {
-        String buildnewspanwhenignoretag = System.getProperty("boomiapm.buildnewspanwhenignoretag");
-        if(buildnewspanwhenignoretag != null && !"".equals(buildnewspanwhenignoretag)) {
-            return Boolean.parseBoolean(buildnewspanwhenignoretag);
-        } else {
-            return true;
-        }
+    @Override
+    protected boolean getDefaultValueBuildNewSpanWhenIgnoreTag() {
+        return false;
     }
 
     protected boolean addProcessNameAsURLWhenIgnoreTag() {
@@ -108,8 +103,12 @@ public class OpenTelemetryTracer extends Tracer {
         if(addprocessnameasurlwhenignoretag != null && !"".equals(addprocessnameasurlwhenignoretag)) {
             return Boolean.parseBoolean(addprocessnameasurlwhenignoretag);
         } else {
-            return false;
+            return getDefaultValueAddProcessNameAsURLWhenIgnoreTag();
         }
+    }
+
+    protected boolean getDefaultValueAddProcessNameAsURLWhenIgnoreTag() {
+        return false;
     }
 
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
