@@ -79,6 +79,7 @@ public class OpenTelemetryTracer extends Tracer {
                 logger.info("Trace found, setting tags ...");
             }
             setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
+            setSpanId (logger, span.getSpanContext().getSpanId(), metadata);
             span.setAttribute(getBoomiExecutionIdKey(), context.getExecutionId());
             span.setAttribute(getBoomiProcessNameKey(), context.getProcessName());
             span.setAttribute(getBoomiProcessIdKey(), context.getProcessId());
@@ -119,6 +120,7 @@ public class OpenTelemetryTracer extends Tracer {
             RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
             if(span!=null && span.getSpanContext().isValid()) {
                 setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
+                setSpanId (logger, span.getSpanContext().getSpanId(), metadata);
                 span.end();
                 logger.info("OpenTelemetry trace closed");
                 if(RealTimeProcessing.ignore.equals(realTimeProcessing)){
@@ -139,6 +141,7 @@ public class OpenTelemetryTracer extends Tracer {
             Span span = getSpan();
             if(span!=null && span.getSpanContext().isValid()) {
                 setTraceId(logger, span.getSpanContext().getTraceId(), metadata);
+                setSpanId (logger, span.getSpanContext().getSpanId(), metadata);
                 span.setStatus(StatusCode.ERROR, getErrorMessage());
                 span.end();
                 logger.info("OpenTelemetry trace closed with Error");

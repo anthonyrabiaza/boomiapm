@@ -4,6 +4,7 @@ import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 import com.boomi.proserv.apm.ComponentType;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -36,6 +37,9 @@ public abstract class Tracer {
     public static final String TRACEID              = "traceID";
     public static final String TRACEIDFORMATTED     = "traceIDFormatted";
     public static final String PARENTID             = "parentID";
+    public static final String SPANID               = "spanID";
+
+    public static final String SPANIDFORMATTED      = "spanIDFormatted";
     public static final String TRACEPAYLOAD         = "tracePayload";
 
     /*protected static String s_serviceName;
@@ -83,6 +87,15 @@ public abstract class Tracer {
         }
     }
 
+    public void setSpanId(Logger logger, String spanId, PayloadMetadata metadata) {
+        setSpanId(spanId);
+        if(metadata!=null) {
+            logger.info(SPANID + ":" + spanId);
+            metadata.setTrackedProperty(SPANID, spanId);
+            metadata.setTrackedProperty(SPANIDFORMATTED, formatTraceId(SPANID));
+        }
+    }
+
     public String getParentId() {
         return parentId;
     }
@@ -94,7 +107,7 @@ public abstract class Tracer {
     public void setParentId(Logger logger, String parentId, PayloadMetadata metadata) {
         setParentId(parentId);
         if(metadata!=null) {
-            logger.info(PARENTID + ":" + getTraceId());
+            logger.info(PARENTID + ":" + parentId);
             metadata.setTrackedProperty(PARENTID, parentId);
         }
     }
@@ -247,5 +260,34 @@ public abstract class Tracer {
 
     public String formatTraceId(String str) {
         return str;
+    }
+
+    protected Object invokeMethodIfExists(Object o, String methodName){
+        Object result;
+        Method[] methods = o.getClass().getMethods();
+        for (Method m : methods) {
+            if (m.getName().equals(methodName)) {
+                try {
+                    result = m.invoke(o, null);
+                    return result;
+                } catch (Exception ex) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    protected String getStringObject(Object o, String methodName){
+        Object result = invokeMethodIfExists(o, methodName);
+        if(result != null) {
+            return result.toString();
+        } else {
+            return null;
+        }
+    }
+
+    protected String getParentId(Object o){
+        return getStringObject(o, "getParentId");
     }
 }

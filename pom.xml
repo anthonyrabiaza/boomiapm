@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>1.61</version>
+    <version>1.67</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -91,7 +91,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <artifactId>agent</artifactId>
             <version>21.2.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/appdynamics/21.2.0/javaagent.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/appdynamics/21.2.0/javaagent.jar</systemPath>
         </dependency>
         <!--End AppDynamics-->
         <!--Datadog-->
@@ -276,7 +276,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <artifactId>agent</artifactId>
             <version>1.0.1</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/opentelemetry/1.0.0/opentelemetry-javaagent-all.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/opentelemetry/1.0.0/opentelemetry-javaagent-all.jar</systemPath>
         </dependency>
         -->
         <!--JUnit-->
@@ -294,61 +294,68 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </dependency>
         <!--End JUnit-->
         <!--Boomi Runtime-->
-        <dependency>
+        <!--<dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.1.17</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/jaxb-api.jar</systemPath>
-        </dependency>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/jaxb-api.jar</systemPath>
+        </dependency-->
         <dependency>
             <groupId>com.boomi.execution</groupId>
             <artifactId>boomi-execution</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/container-execution.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/container-execution.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.boomi.container.config</groupId>
             <artifactId>boomi-container-config</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/container-config.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/container-config.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.boomi.document.api</groupId>
             <artifactId>boomi-document-api-sdk</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/document-sdk-api.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/document-sdk-api.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.boomi.store.api</groupId>
             <artifactId>boomi-store-api</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/container-store-api.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/container-store-api.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.boomi.connector</groupId>
             <artifactId>boomi-connector</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/container-connector.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/container-connector.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.boomi.document.api</groupId>
             <artifactId>boomi-document-api</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/container-document-api.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/container-document-api.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.boomi.model</groupId>
             <artifactId>boomi-model</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/ant/Documents/dev/lib/boomi/model-platform.jar</systemPath>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/model-platform.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/boomi/other/jaxb-api.jar</systemPath>
         </dependency>
         <!--End Boomi Runtime-->
     </dependencies>

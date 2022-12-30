@@ -47,12 +47,21 @@ public class OpenTracingTracer extends Tracer {
                     SpanContext spanContext = tracer.extract(format, textMapAdapter);
                     io.opentracing.Tracer.SpanBuilder spanBuilder;
                     if (spanContext == null) {
-                        spanBuilder = tracer.buildSpan(context.getProcessName());
+                        if(!isValid(span)) {
+                            logger.info("Building Span as new");
+                            spanBuilder = tracer.buildSpan(context.getProcessName());
+                        } else {
+                            logger.info("Unable to continue transaction with header, using existing span");
+                            spanBuilder = null;
+                        }
                     } else {
+                        logger.info("Building Span as child");
                         spanBuilder = tracer.buildSpan(context.getProcessName()).asChildOf(spanContext);
                     }
-                    span = spanBuilder.start();
-                    tracer.activateSpan(span);
+                    if(spanBuilder != null){
+                        span = spanBuilder.start();
+                        tracer.activateSpan(span);
+                    }
                 } else {
                     logger.warning("w3c header not found");
                 }
@@ -70,7 +79,8 @@ public class OpenTracingTracer extends Tracer {
             SpanContext spanContext = span.context();
             if(spanContext != null) {
                 setTraceId (logger, spanContext.toTraceId(), metadata);
-                setParentId(logger, spanContext.toSpanId(), metadata);
+                setSpanId  (logger, spanContext.toSpanId(), metadata);
+                setParentId(logger, getParentId(spanContext), metadata);
             } else {
                 logger.warning("OpenTracing SpanContext is null");
             }
@@ -106,7 +116,8 @@ public class OpenTracingTracer extends Tracer {
                 SpanContext spanContext = span.context();
                 if(spanContext != null) {
                     setTraceId (logger, spanContext.toTraceId(), metadata);
-                    setParentId(logger, spanContext.toSpanId(), metadata);
+                    setSpanId  (logger, spanContext.toSpanId(), metadata);
+                    setParentId(logger, getParentId(spanContext), metadata);
                 } else {
                     logger.warning("OpenTracing SpanContext is null");
                 }
@@ -131,7 +142,8 @@ public class OpenTracingTracer extends Tracer {
                 SpanContext spanContext = span.context();
                 if(spanContext != null) {
                     setTraceId (logger, spanContext.toTraceId(), metadata);
-                    setParentId(logger, spanContext.toSpanId(), metadata);
+                    setSpanId  (logger, spanContext.toSpanId(), metadata);
+                    setParentId(logger, getParentId(spanContext), metadata);
                 } else {
                     logger.warning("OpenTracing SpanContext is null");
                 }
