@@ -68,6 +68,9 @@
             <allowedValue label="Start Trace">
                 <value>start</value>
             </allowedValue>
+            <allowedValue label="Save/Continue">
+                <value>save</value>
+            </allowedValue>
             <allowedValue label="Stop Trace">
                 <value>stop</value>
             </allowedValue>
@@ -111,6 +114,7 @@
     <trackedProperty id="tracePayload" label="Trace Payload"/>
     <trackedProperty id="traceID" label="Trace ID"/>
     <trackedProperty id="parentID" label="Parent ID"/>
+    <trackedProperty id="spanID" label="Span ID"/>
     <trackedProperty id="errorMessage" label="Try/Catch Message"/>
 
 </GenericConnectorDescriptor>

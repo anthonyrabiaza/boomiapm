@@ -5,15 +5,18 @@ public class BoomiContext {
     public String executionId;
     public String processName;
     private String processNameClean;
+    public String currentProcessName;
+    private String currentProcessNameClean;
     public String processId;
     public String accountId;
 
-    public BoomiContext(String serviceName, String executionId, String processName, String processId, String accountId) {
-        this.serviceName    = serviceName;
-        this.executionId    = executionId;
-        this.processName    = processName;
-        this.processId      = processId;
-        this.accountId      = accountId;
+    public BoomiContext(String serviceName, String executionId, String processName, String currentProcessName, String processId, String accountId) {
+        this.serviceName            = serviceName;
+        this.executionId            = executionId;
+        this.processName            = processName;
+        this.currentProcessName     = currentProcessName;
+        this.processId              = processId;
+        this.accountId              = accountId;
     }
 
     public String getServiceName() {
@@ -48,12 +51,27 @@ public class BoomiContext {
         return processName;
     }
 
+    public String getCurrentProcessName() {
+        return currentProcessName;
+    }
+
+    protected String cleanString(String str) {
+        str = str.replaceAll("[^a-zA-Z0-9]", " ");
+        str = str.trim().replaceAll("\\s+", " ");
+        return str;
+    }
     public String getProcessNameAlphanum() {
         if(processNameClean == null) {
-            processNameClean = processName.replaceAll("[^a-zA-Z0-9]", " ");
-            processNameClean = processNameClean.trim().replaceAll("\\s+", " ");
+            processNameClean = cleanString(processName);
         }
         return processNameClean;
+    }
+
+    public String getCurrentProcessNameAlphanum() {
+        if(currentProcessNameClean == null) {
+            currentProcessNameClean = cleanString(currentProcessName);
+        }
+        return currentProcessNameClean;
     }
 
     public void setProcessName(String processName) {

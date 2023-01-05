@@ -24,16 +24,17 @@ public class BoomiAPMUpdateOperation extends BaseUpdateOperation {
         Logger logger 	= response.getLogger();
         boolean log 	= true;
 
-        String platform     = getContext().getConnectionProperties().getProperty("platform");
-        String apiURL 	    = getContext().getConnectionProperties().getProperty("metricsAPIURL");
-        String apiKey 	    = getContext().getConnectionProperties().getProperty("apiKey");
-        String appKey 	    = getContext().getConnectionProperties().getProperty("appKey");
+        String platform             = getContext().getConnectionProperties().getProperty("platform");
+        String apiURL 	            = getContext().getConnectionProperties().getProperty("metricsAPIURL");
+        String apiKey 	            = getContext().getConnectionProperties().getProperty("apiKey");
+        String appKey 	            = getContext().getConnectionProperties().getProperty("appKey");
+        String serviceName	        = getContext().getConnectionProperties().getProperty("serviceName");
 
-        String serviceName	= getContext().getConnectionProperties().getProperty("serviceName");
-        String executionID  = "N/A";
-        String processName  = "N/A";
-        String processID    = "N/A";
-        String accountID    = "N/A";
+        String executionID          = "N/A";
+        String processName          = "N/A";
+        String currentProcessName  	= "N/A";
+        String processID            = "N/A";
+        String accountID            = "N/A";
 
         executionID = ExecutionManager.getCurrent().getTopLevelExecutionId();
 
@@ -45,9 +46,10 @@ public class BoomiAPMUpdateOperation extends BaseUpdateOperation {
             processID   = ExecutionManager.getCurrent().getProcessId();
         }
 
-        accountID		= ExecutionManager.getCurrent().getAccountId();
+        currentProcessName  = ExecutionManager.getCurrent().getProcessName();
+        accountID		    = ExecutionManager.getCurrent().getAccountId();
 
-        BoomiContext boomiContext 	= new BoomiContext(serviceName, executionID, processName, processID, accountID);
+        BoomiContext boomiContext 	= new BoomiContext(serviceName, executionID, processName, currentProcessName, processID, accountID);
 
         for (ObjectData input : request) {
             try {

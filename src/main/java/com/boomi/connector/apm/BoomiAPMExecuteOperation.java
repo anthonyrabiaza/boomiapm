@@ -11,7 +11,6 @@ import com.boomi.connector.generic.TrackedBaseData;
 import com.boomi.connector.util.BaseUpdateOperation;
 
 import com.boomi.execution.ExecutionManager;
-import com.boomi.execution.ExecutionUtil;
 import com.boomi.proserv.apm.BoomiContext;
 import com.boomi.proserv.apm.events.EventsPublisher;
 import com.boomi.proserv.apm.events.EventsPublisherFactory;
@@ -38,20 +37,21 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 
 		log(logger, log, "ARA: executeUpdate received");
 
-		String platform 		= getContext().getConnectionProperties().getProperty("platform");
-		String action 			= getContext().getOperationProperties().getProperty("action");
+		String platform 			= getContext().getConnectionProperties().getProperty("platform");
+		String action 				= getContext().getOperationProperties().getProperty("action");
 
-		boolean sendEvent 		= getContext().getOperationProperties().getBooleanProperty("sendEvent");
-		String apiURL 			= getContext().getConnectionProperties().getProperty("eventsAPIURL");
-		String apiKey 			= getContext().getConnectionProperties().getProperty("apiKey");
-		String appKey 			= getContext().getConnectionProperties().getProperty("appKey");
-		String serviceName		= getContext().getConnectionProperties().getProperty("serviceName");
-		String rtProcess		= getContext().getOperationProperties().getProperty("realTimeProcessing");
+		boolean sendEvent 			= getContext().getOperationProperties().getBooleanProperty("sendEvent");
+		String apiURL 				= getContext().getConnectionProperties().getProperty("eventsAPIURL");
+		String apiKey 				= getContext().getConnectionProperties().getProperty("apiKey");
+		String appKey 				= getContext().getConnectionProperties().getProperty("appKey");
+		String serviceName			= getContext().getConnectionProperties().getProperty("serviceName");
+		String rtProcess			= getContext().getOperationProperties().getProperty("realTimeProcessing");
 
-		String executionID  = "N/A";
-		String processName  = "N/A";
-		String processID    = "N/A";
-		String accountID    = "N/A";
+		String executionID  		= "N/A";
+		String processName  		= "N/A";
+		String currentProcessName  	= "N/A";
+		String processID    		= "N/A";
+		String accountID    		= "N/A";
 
 		executionID = ExecutionManager.getCurrent().getTopLevelExecutionId();
 
@@ -63,11 +63,12 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 			processID   = ExecutionManager.getCurrent().getProcessId();
 		}
 
-		accountID		= ExecutionManager.getCurrent().getAccountId();
+		currentProcessName 	= ExecutionManager.getCurrent().getProcessName();
+		accountID			= ExecutionManager.getCurrent().getAccountId();
 
 		log(logger, log, "ARA: action is " + action + ", platform is " + platform);
 
-		BoomiContext boomiContext 	= new BoomiContext(serviceName, executionID, processName, processID, accountID);
+		BoomiContext boomiContext 	= new BoomiContext(serviceName, executionID, processName, currentProcessName, processID, accountID);
 		PayloadMetadata metadata 	= response.createMetadata();
 		Tracer tracer				= null;
 		try {
@@ -98,6 +99,9 @@ public class BoomiAPMExecuteOperation extends BaseUpdateOperation {
 							switch (action) {
 								case "start":
 									tracer.start(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
+									break;
+								case "save":
+									tracer.save(logger, boomiContext, rtProcess, message, dynProps, props, metadata);
 									break;
 								case "stop":
 									tracer.stop(logger, boomiContext, rtProcess, message, dynProps, props, metadata);

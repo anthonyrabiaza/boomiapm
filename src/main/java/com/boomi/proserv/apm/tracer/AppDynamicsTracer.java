@@ -8,6 +8,7 @@ import com.appdynamics.apm.appagent.api.DataScope;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class AppDynamicsTracer extends Tracer {
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Adding AppDynamics trace ...");
-            Transaction transaction = AppdynamicsAgent.getTransaction();
+            Transaction transaction = getTransaction();
             if(transaction == null || transaction instanceof NoOpTransaction) {
                 logger.info("Starting new AppDynamics transaction");
                 transaction = AppdynamicsAgent.startTransaction(context.getProcessNameAlphanum(), null, EntryTypes.POJO, false);
@@ -44,7 +45,7 @@ public class AppDynamicsTracer extends Tracer {
         super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Ending AppDynamics trace ...");
-            Transaction transaction = AppdynamicsAgent.getTransaction();
+            Transaction transaction = getTransaction();
             if(transaction != null) {
                 transaction.end();
             } else {
@@ -61,7 +62,7 @@ public class AppDynamicsTracer extends Tracer {
         super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
             logger.info("Ending AppDynamics trace with error...");
-            Transaction transaction = AppdynamicsAgent.getTransaction();
+            Transaction transaction = getTransaction();
             if(transaction != null) {
                 transaction.collectData(getBoomiErrorMessageKey(), getErrorMessage(), getAllScopes());
                 transaction.end();
@@ -70,6 +71,10 @@ public class AppDynamicsTracer extends Tracer {
         } catch (Exception e) {
             logger.severe("Error adding tags:" + e.getMessage());
         }
+    }
+
+    private Transaction getTransaction() {
+        return AppdynamicsAgent.getTransaction();
     }
 
     protected Set<DataScope> getAllScopes() {
