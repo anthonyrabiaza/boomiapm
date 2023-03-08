@@ -8,6 +8,9 @@
         <allowedValue label="AppDynamics">
             <value>appdynamics</value>
         </allowedValue>
+        <allowedValue label="AWS X-Ray Otel">
+            <value>awsxray_opentelemetry</value>
+        </allowedValue>
         <allowedValue label="Datadog">
             <value>datadog</value>
         </allowedValue>
