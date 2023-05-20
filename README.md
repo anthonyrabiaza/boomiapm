@@ -17,12 +17,13 @@ Taking the following Components topology:
 
 ## List of Actions
 
-| Connection Actions | Operation | Traces    | Events | Metrics |
-| ------------------ | --------- | --------- | ------ | ------- |
-| Execute            | APM Start | Start     | N/A    | N/A     |
-| Execute            | APM Stop  | End       | Yes    | N/A     |
-| Execute            | APM Error | Start     | Yes    | N/A     |
-| Update             | Publish Metrics | N/A | N/A    | Yes     |
+| Connection Actions | Operation         | Traces   | Events | Metrics |
+| ------------------ |-------------------|----------|--------| ------- |
+| Execute            | APM Start         | Start    | N/A    | N/A     |
+| Execute            | APM Save/Continue | Continue | N/A    | N/A     |
+| Execute            | APM Stop          | End      | Yes    | N/A     |
+| Execute            | APM Error         | Start    | Yes    | N/A     |
+| Update             | Publish Metrics   | N/A      | N/A    | Yes     |
 
 ## Observability Platforms supported
 
@@ -85,6 +86,7 @@ A third one with a "Error' Action and the "Send Event" enabled
 Then, we are the three shapes to the process:
 
 - The APM Start shape at the beginning
+- (Optional) The APM Save/Continue shape in a sub-process (will add the current process name) or in the main process to add tags
 - The APM Stop shape before the last End, please note that we created a branch here as the Disk shape (Get) might not returned a Document thus an APM Stop shape after the Disk might not be called
 - The APM Error in the try catch
 

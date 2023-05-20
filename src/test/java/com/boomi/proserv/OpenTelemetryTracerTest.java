@@ -13,7 +13,7 @@ public class OpenTelemetryTracerTest {
     void test() {
         if(1==1) {
             Tracer tracer = TracerFactory.getTracer("opentelemetry");
-            BoomiContext boomiContext = new BoomiContext("testService", "execution123", "processABC", "processABC", "account123");
+            BoomiContext boomiContext = new BoomiContext("testService", "execution123", "processABC", "processABC", "processABC", "account123");
             Logger logger = Logger.getLogger(this.toString());
             tracer.start(
                     logger,

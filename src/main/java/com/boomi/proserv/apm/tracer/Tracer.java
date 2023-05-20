@@ -11,17 +11,18 @@ import java.util.logging.Logger;
 
 public abstract class Tracer {
 
-    private static final String BOOMI_EXECUTION_ID      = "boomi.executionID";
-    private static final String BOOMI_PROCESS_NAME      = "boomi.processName";
-    private static final String BOOMI_PROCESS_ID        = "boomi.processID";
-    private static final String BOOMI_ERROR_MESSAGE     = "boomi.errorMessage";
-    private static final String BOOMI_ATTRIBUTES_PREFIX = "boomi.";
+    protected static final String BOOMI_EXECUTION_ID            = "boomi.executionID";
+    protected static final String BOOMI_PROCESS_NAME            = "boomi.processName";
+    protected static final String BOOMI_CURRENT_PROCESS_NAME    = "currentProcessName";
+    protected static final String BOOMI_PROCESS_ID              = "boomi.processID";
+    protected static final String BOOMI_ERROR_MESSAGE           = "boomi.errorMessage";
+    protected static final String BOOMI_ATTRIBUTES_PREFIX       = "boomi.";
 
-    public static final String HTTP_DOC_PREFIX      = "inheader_";
+    public static final String HTTP_DOC_PREFIX                  = "inheader_";
 
     /*w3c*/
-    public static final String TRACEPARENT          = "traceparent";
-    public static final String TRACESTATE           = "tracestate";
+    public static final String TRACEPARENT                      = "traceparent";
+    public static final String TRACESTATE                       = "tracestate";
 
     //zipking b3
     /*
@@ -41,6 +42,9 @@ public abstract class Tracer {
 
     public static final String SPANIDFORMATTED      = "spanIDFormatted";
     public static final String TRACEPAYLOAD         = "tracePayload";
+    public static final String KEYVALUE_TAGS        = "keyvalueTags";
+    public static final String KEYVALUE_SEPARATOR   = ";";
+    public static final String KEYVALUE_EQUALS      = "=";
 
     /*protected static String s_serviceName;
     protected static String s_serviceVersion;*/
@@ -142,6 +146,23 @@ public abstract class Tracer {
             logger.severe("Error adding tags:" + e.getMessage());
         }
     }
+
+    public void save(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
+        try {
+            String currentProcessValue = BOOMI_CURRENT_PROCESS_NAME + KEYVALUE_EQUALS + context.getCurrentProcessName();
+            if(dynProps==null || dynProps.size()==0 || dynProps.isEmpty()){
+                dynProps = new HashMap<>();
+                dynProps.put(KEYVALUE_TAGS, currentProcessValue);
+            } else {
+                String tags = dynProps.get(KEYVALUE_TAGS);
+                tags = tags + KEYVALUE_SEPARATOR + currentProcessValue;
+                dynProps.put(KEYVALUE_TAGS, tags);
+            }
+            addTags(dynProps);
+        } catch (Exception e) {
+            logger.severe("Error adding tags:" + e.getMessage());
+        }
+    }
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             addTags(dynProps);
@@ -233,12 +254,12 @@ public abstract class Tracer {
     protected Map<String, String> getTags(Map<String, String> dynProps) {
         Map<String, String> kvMap = new HashMap<String, String>();
         if(dynProps!=null) {
-            String kvs = dynProps.get("keyvalueTags");
+            String kvs = dynProps.get(KEYVALUE_TAGS);
             if (kvs != null && !"".equals(kvs)) {
-                String[] kvArray = kvs.split(";");
+                String[] kvArray = kvs.split(KEYVALUE_SEPARATOR);
                 for (int i = 0; i < kvArray.length; i++) {
                     String kv = kvArray[i];
-                    String[] kva = kv.split("=");
+                    String[] kva = kv.split(KEYVALUE_EQUALS);
                     kvMap.put(getBoomiAttributesPrefix() + kva[0], kva[1]);
                 }
             }

@@ -6,7 +6,7 @@ import com.newrelic.api.agent.ConcurrentHashMapHeaders;
 import com.newrelic.api.agent.HeaderType;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.TransportType;
-
+import com.newrelic.api.agent.Token;
 
 import java.util.Base64;
 import java.util.Map;
@@ -65,7 +65,14 @@ public class NewRelicTracer extends Tracer {
                         logger.severe("NewRelic trace not added " + e);
                     }
                 } else {
-                    logger.warning("NewRelic trace not found ");
+                    logger.warning("NewRelic trace not found in headers, using Token");
+                    if(NewRelic.getAgent().getTransaction().getToken().isActive()) {
+                        logger.info("Token is active");
+                        NewRelic.setTransactionName("Custom", context.getProcessName());
+                        addContext(logger, context, metadata);
+                    } else {
+                        logger.warning("Token is not active");
+                    }
                 }
                 break;
             case parentid:
@@ -85,7 +92,7 @@ public class NewRelicTracer extends Tracer {
                     logger.warning("NewRelic parentid not found ");
                 }
                 break;
-            default://TO BE TESTED
+            default:
                 try {
                     NewRelic.setTransactionName("Custom", context.getProcessName());
                     addContext(logger, context, metadata);
