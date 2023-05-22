@@ -2,14 +2,9 @@ package com.boomi.proserv.apm.tracer;
 
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
-import com.newrelic.api.agent.ConcurrentHashMapHeaders;
-import com.newrelic.api.agent.HeaderType;
-import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.TransportType;
-import com.newrelic.api.agent.Token;
+import com.newrelic.api.agent.*;
 
-import java.util.Base64;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class NewRelicTracer extends Tracer {
@@ -28,7 +23,6 @@ public class NewRelicTracer extends Tracer {
                         logger.info("Continuing transaction using newrelic payload");
                         NewRelic.getAgent().getTransaction().acceptDistributedTracePayload(newrelic);
                         addContext(logger, context, metadata);
-                        setTracePayload(logger, newrelic, metadata);
                     } catch (Exception e) {
                         logger.severe("NewRelic trace not added " + e);
                     }
@@ -58,7 +52,7 @@ public class NewRelicTracer extends Tracer {
                         }
                         ConcurrentHashMapHeaders headers = ConcurrentHashMapHeaders.build(headerType);
                         headers.addHeader(TRACEPARENT, traceparent);
-                        headers.addHeader(TRACESTATE,  tracestate);
+                        headers.addHeader(TRACESTATE, tracestate);
                         NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(transportType, headers);
                         addContext(logger, context, metadata);
                     } catch (Exception e) {
@@ -147,7 +141,11 @@ public class NewRelicTracer extends Tracer {
         NewRelic.addCustomParameter(getBoomiExecutionIdKey(), context.getExecutionId());
         NewRelic.addCustomParameter(getBoomiProcessNameKey(), context.getProcessName());
         NewRelic.addCustomParameter(getBoomiProcessIdKey(), context.getProcessId());
-        setTraceId(logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
+        setTraceId      (logger, NewRelic.getAgent().getTraceMetadata().getTraceId(), metadata);
+        setSpanId       (logger, NewRelic.getAgent().getTraceMetadata().getSpanId(), metadata);
+        Headers headers = getHeaders();
+        setParentId     (logger, getTraceparent(headers), metadata);//Storing traceparent
+        setTracePayload (logger, getTracestate(headers), metadata);//Storing tracestate
     }
 
     @Override
@@ -158,5 +156,56 @@ public class NewRelicTracer extends Tracer {
                 NewRelic.addCustomParameter(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    protected Headers getHeaders() {
+        Headers headers = new Headers() {
+            Map<String, String> map = new HashMap<String, String>();
+            @Override
+            public HeaderType getHeaderType() {
+                return HeaderType.MESSAGE;
+            }
+
+            @Override
+            public String getHeader(String s) {
+                return map.get(s);
+            }
+
+            @Override
+            public Collection<String> getHeaders(String s) {
+                return new ArrayList<String>(map.values());
+            }
+
+            @Override
+            public void setHeader(String s, String s1) {
+                map.put(s, s1);
+            }
+
+            @Override
+            public void addHeader(String s, String s1) {
+                map.put(s, s1);
+            }
+
+            @Override
+            public Collection<String> getHeaderNames() {
+                return new ArrayList<String>(map.keySet());
+            }
+
+            @Override
+            public boolean containsHeader(String s) {
+                return map.containsKey(s);
+            }
+        };
+
+        NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
+        return headers;
+    }
+
+    protected String getTraceparent(Headers headers) {
+        return headers.getHeader(TRACEPARENT);
+    }
+
+    protected String getTracestate(Headers headers) {
+        return headers.getHeader(TRACESTATE);
     }
 }

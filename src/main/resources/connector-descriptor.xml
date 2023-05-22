@@ -116,6 +116,7 @@
 
     <trackedProperty id="tracePayload" label="Trace Payload"/>
     <trackedProperty id="traceID" label="Trace ID"/>
+    <trackedProperty id="traceIDFormatted" label="Trace ID Formatted"/>
     <trackedProperty id="parentID" label="Parent ID"/>
     <trackedProperty id="spanID" label="Span ID"/>
     <trackedProperty id="errorMessage" label="Try/Catch Message"/>
