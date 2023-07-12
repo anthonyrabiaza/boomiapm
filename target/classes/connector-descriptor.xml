@@ -23,6 +23,9 @@
         <allowedValue label="Lightstep">
             <value>lightstep</value>
         </allowedValue>
+        <allowedValue label="ManageEngine AppManager">
+            <value>manageengine_appmanager</value>
+        </allowedValue>
         <allowedValue label="New Relic">
             <value>newrelic</value>
         </allowedValue>

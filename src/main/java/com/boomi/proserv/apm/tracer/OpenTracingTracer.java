@@ -65,7 +65,7 @@ public class OpenTracingTracer extends Tracer {
                 } else {
                     logger.warning("w3c header not found");
                 }
-            } else if(realTimeProcessing.equals(RealTimeProcessing.ignore) || !isValid(span)) {
+            } else if(realTimeProcessing.equals(RealTimeProcessing.ignore) || !isValid(span)) { //FIXME: remove else
                 if(buildNewSpanWhenIgnoreTag() || !isValid(span)) {
                     logger.info("Trace not found/ignored. Creating OpenTracing trace ...");
                     span = tracer.buildSpan(context.getProcessName()).ignoreActiveSpan().withTag("service", context.getServiceName()).start();

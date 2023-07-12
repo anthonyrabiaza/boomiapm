@@ -22,6 +22,8 @@ public class TracerFactory {
                 tracer = new OpenTracingTracer();
                 break;
             case "elasticapm":
+                tracer = new ElasticAPMTracer();
+                break;
             case "opentracing_resolver":
                 tracer = new OpenTracingResolver();
                 break;
@@ -31,6 +33,9 @@ public class TracerFactory {
                 break;
             case "newrelic":
                 tracer = new NewRelicTracer();
+                break;
+            case "manageengine_appmanager":
+                tracer = new ManageEngineAppManagerTracer();
                 break;
             case "wavefront":
                 tracer = new WavefrontTracer();

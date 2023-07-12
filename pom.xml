@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>1.86</version>
+    <version>1.89</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -121,6 +121,22 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </dependency>
         -->
         <!--End ElasticAPM-->
+        <!--ManageEngine-->
+        <dependency>
+            <groupId>com.manageengine.apminsight.agent.api</groupId>
+            <artifactId>apminsight-javaagent-api</artifactId>
+            <version>5.5.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/manageengine/5.5.0/apminsight-javaagent-api.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.manageengine.apminsight.agent</groupId>
+            <artifactId>apminsight-javaagent</artifactId>
+            <version>5.5.0</version>
+            <scope>system</scope>
+            <systemPath>/home/ant/OneDrive/MyDev/lib/manageengine/5.5.0/apminsight-javaagent.jar</systemPath>
+        </dependency>
+        <!--End ManageEngine-->
         <!--NewRelic-->
         <dependency>
             <groupId>com.newrelic.agent.java</groupId>
