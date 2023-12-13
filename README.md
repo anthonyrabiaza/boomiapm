@@ -48,7 +48,7 @@ Taking the following Components topology:
 
 ## Getting Started
 
-Please download the library [connector-archive](target/boomiapm-1.61--car.zip?raw=true) and the connector descriptor [connector-descriptor](target/classes/connector-descriptor.xml?raw=true).
+Please download the library [connector-archive](target/boomiapm-1.90--car.zip?raw=true) and the connector descriptor [connector-descriptor](target/classes/connector-descriptor.xml?raw=true).
 
 ### Prerequisites
 
