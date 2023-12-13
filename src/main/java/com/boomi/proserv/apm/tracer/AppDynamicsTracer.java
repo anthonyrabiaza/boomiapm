@@ -7,6 +7,7 @@ import com.appdynamics.agent.api.impl.NoOpTransaction;
 import com.appdynamics.apm.appagent.api.DataScope;
 import com.boomi.connector.api.PayloadMetadata;
 import com.boomi.proserv.apm.BoomiContext;
+import com.boomi.proserv.apm.ComponentType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,14 +17,22 @@ import java.util.logging.Logger;
 
 public class AppDynamicsTracer extends Tracer {
 
+    public static final String SINGULARITYHEADER = "singularityheader";
+
     @Override
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
             logger.info("Adding AppDynamics trace ...");
             Transaction transaction = getTransaction();
             if(transaction == null || transaction instanceof NoOpTransaction) {
-                logger.info("Starting new AppDynamics transaction");
-                transaction = AppdynamicsAgent.startTransaction(context.getProcessNameAlphanum(), null, EntryTypes.POJO, false);
+                String singularityheader = getSingularityheader(properties);
+                if(singularityheader == null || singularityheader.equals("")) {
+                    singularityheader = null;
+                    logger.info("Starting new AppDynamics transaction");
+                } else {
+                    logger.info("Header found, try to continue AppDynamics transaction");
+                }
+                transaction = AppdynamicsAgent.startTransaction(context.getProcessNameAlphanum(), singularityheader, EntryTypes.POJO, false);
             } else {
                 logger.info("Continuing AppDynamics transaction");
                 AppdynamicsAgent.setCurrentTransactionName(context.getProcessNameAlphanum());
@@ -97,5 +106,15 @@ public class AppDynamicsTracer extends Tracer {
                 }
             }
         }
+    }
+
+    protected String getSingularityheader(Map<String, String> properties){
+        String singularityheader = properties.get(HTTP_DOC_PREFIX + SINGULARITYHEADER);//HTTP
+        setComponentType(ComponentType.HTTP);
+        if (singularityheader == null || singularityheader.equals("")) {
+            singularityheader = properties.get(SINGULARITYHEADER);//JMS
+            setComponentType(ComponentType.JMS);
+        }
+        return singularityheader;
     }
 }
