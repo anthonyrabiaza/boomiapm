@@ -213,7 +213,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
-            <version>1.36.1</version>
+            <version>1.60.1</version>
             <scope>provided</scope>
         </dependency>
         <!--backup-->
