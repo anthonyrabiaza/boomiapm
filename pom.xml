@@ -195,7 +195,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
-            <version>1.4.1-alpha</version>
+            <version>1.33.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
