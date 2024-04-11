@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>com.boomi.connector.apm</groupId>
     <artifactId>boomiapm</artifactId>
-    <version>1.91</version>
+    <version>1.92</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,7 +14,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.assembly.plugin.version>2.6</maven.assembly.plugin.version>
         <connector.sdk.version>2.8.2</connector.sdk.version>
-        <boomi.local.path>/Users/ant/OneDrive/MyDev/lib/</boomi.local.path><!--Change the location, but keep the change locally-->
+        <boomi.local.path>/Users/ant/Dev/lib/</boomi.local.path><!--Change the location, but keep the change locally-->
     </properties>
 
     <repositories>

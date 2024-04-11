@@ -19,13 +19,16 @@ public class DynatraceTracer extends Tracer {
     @Override
     public void start(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         try {
-            logger.info("Creating Dynatrace trace ...");
-            CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
-            tracer.start();
-            getAgent(logger).addCustomRequestAttribute(getBoomiExecutionIdKey(), context.getExecutionId());
-            getAgent(logger).addCustomRequestAttribute(getBoomiProcessNameKey(), context.getProcessName());
-            getAgent(logger).addCustomRequestAttribute(getBoomiProcessIdKey(), context.getProcessId());
-            logger.info("Dynatrace trace added");
+            RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
+            if(RealTimeProcessing.ignore.equals(realTimeProcessing)){
+                logger.info("Creating Dynatrace trace ...");
+                CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
+                tracer.start();
+                getAgent(logger).addCustomRequestAttribute(getBoomiExecutionIdKey(), context.getExecutionId());
+                getAgent(logger).addCustomRequestAttribute(getBoomiProcessNameKey(), context.getProcessName());
+                getAgent(logger).addCustomRequestAttribute(getBoomiProcessIdKey(), context.getProcessId());
+                logger.info("Dynatrace trace added");
+            }
         } catch (Exception e) {
             logger.severe("Error adding creating Dynatrace trace:" + e.getMessage());
         }
@@ -36,9 +39,12 @@ public class DynatraceTracer extends Tracer {
     public void stop(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         super.stop(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
-            logger.info("Closing Dynatrace trace ...");
-            CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
-            tracer.end();
+            RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
+            if(RealTimeProcessing.ignore.equals(realTimeProcessing)) {
+                logger.info("Closing Dynatrace trace ...");
+                CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
+                tracer.end();
+            }
         } catch (Exception e) {
             logger.severe("Dynatrace trace not closed:" + e.getMessage());
         }
@@ -48,9 +54,12 @@ public class DynatraceTracer extends Tracer {
     public void error(Logger logger, BoomiContext context, String rtProcess, String document, Map<String, String> dynProps, Map<String, String> properties, PayloadMetadata metadata) {
         super.error(logger, context, rtProcess, document, dynProps, properties, metadata);
         try {
-            logger.info("Closing Dynatrace trace with Error...");
-            CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
-            tracer.error(getErrorMessage());
+            RealTimeProcessing realTimeProcessing = RealTimeProcessing.getValue(rtProcess);
+            if(RealTimeProcessing.ignore.equals(realTimeProcessing)) {
+                logger.info("Closing Dynatrace trace with Error...");
+                CustomServiceTracer tracer = getDynatraceTracer(logger, context, SERVICE);
+                tracer.error(getErrorMessage());
+            }
         } catch (Exception e) {
             logger.severe("Dynatrace trace not closed:" + e.getMessage());
         }
